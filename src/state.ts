@@ -186,6 +186,12 @@ export class State {
 
   // ── UI State (SRS §4.2 `_hide` suffix) ────────────────────
 
+  /** Whether to render test dataset points on the heatmap. */
+  showTestData: boolean = false;
+
+  /** Whether to discretize the heatmap output into binary classification outputs. */
+  discretize: boolean = false;
+
   /** Whether the tutorial UI is hidden. */
   tutorial: string = '';
 
@@ -209,7 +215,10 @@ export class State {
     { name: 'seed',               type: Type.STRING,                                defaultValue: '' },
     { name: 'problem',            type: Type.OBJECT,       keyMap: { classification: Problem.CLASSIFICATION, regression: Problem.REGRESSION }, defaultValue: Problem.CLASSIFICATION },
     { name: 'percTrainData',      type: Type.NUMBER,                                defaultValue: 50 },
+    { name: 'showTestData',       type: Type.BOOLEAN,                               defaultValue: false },
+    { name: 'discretize',         type: Type.BOOLEAN,                               defaultValue: false },
     { name: 'x',                  type: Type.BOOLEAN,                               defaultValue: true },
+
     { name: 'y',                  type: Type.BOOLEAN,                               defaultValue: true },
     { name: 'xSquared',           type: Type.BOOLEAN,                               defaultValue: false },
     { name: 'ySquared',           type: Type.BOOLEAN,                               defaultValue: false },
@@ -232,61 +241,112 @@ export class State {
    * @returns An array of strings (may be empty).
    */
   static parseArray(value: string): string[] {
-    // TODO P3.6: return value.trim() === '' ? [] : value.split(',')
-    throw new Error('Not implemented: State.parseArray');
+    if (!value) return [];
+    return value.trim() === '' ? [] : value.split(',');
   }
 
   /**
    * Reads and parses the URL hash fragment to reconstruct State.
-   * Splits on `&` (parameter separator) and `=` (key-value separator).
-   * Falls back to defaults for missing or invalid parameters.
-   * Generates a fresh random seed if none is present in the URL.
-   *
    * SRS §4.2, §28.3, §35.2, P3.7
-   *
-   * @returns A fully populated State object.
    */
   static deserializeState(): State {
-    // TODO P3.7: Parse window.location.hash
-    // Algorithm:
-    //   1. state = new State()
-    //   2. hash = window.location.hash.slice(1) (remove leading '#')
-    //   3. params = {} — split hash on '&', then split each on '=', store key → value
-    //   4. For each prop in State.PROPS:
-    //      - rawValue = params[prop.name]
-    //      - if missing → skip (default remains)
-    //      - if Type.NUMBER → state[prop.name] = +rawValue
-    //      - if Type.BOOLEAN → state[prop.name] = rawValue === 'true'
-    //      - if Type.STRING → state[prop.name] = rawValue
-    //      - if Type.ARRAY_NUMBER → state[prop.name] = parseArray(rawValue).map(Number)
-    //      - if Type.OBJECT → state[prop.name] = prop.keyMap![rawValue] ?? default
-    //   5. Handle _hide suffix properties for UI toggles
-    //   6. If seed is empty: generate new seed, call Math.seedrandom(seed), state.seed = seed
-    //      Else: Math.seedrandom(state.seed)
-    //   7. return state
-    throw new Error('Not implemented: State.deserializeState');
+    const state = new State();
+    const hash = typeof window !== 'undefined' && window.location.hash ? window.location.hash.slice(1) : '';
+    const params: { [key: string]: string } = {};
+
+    if (hash) {
+      const pairs = hash.split('&');
+      for (const pair of pairs) {
+        const [key, value] = pair.split('=');
+        if (key && value !== undefined) {
+          params[key] = decodeURIComponent(value);
+        }
+      }
+    }
+
+    for (const prop of State.PROPS) {
+      const rawValue = params[prop.name];
+      if (rawValue === undefined) continue;
+
+      if (prop.type === Type.NUMBER) {
+        const val = +rawValue;
+        if (!isNaN(val)) (state as any)[prop.name] = val;
+      } else if (prop.type === Type.BOOLEAN) {
+        (state as any)[prop.name] = rawValue === 'true';
+      } else if (prop.type === Type.STRING) {
+        (state as any)[prop.name] = rawValue;
+      } else if (prop.type === Type.ARRAY_NUMBER) {
+        const arr = State.parseArray(rawValue).map(Number).filter(n => !isNaN(n));
+        if (arr.length > 0) (state as any)[prop.name] = arr;
+      } else if (prop.type === Type.OBJECT && prop.keyMap) {
+        if (prop.keyMap[rawValue] !== undefined) {
+          (state as any)[prop.name] = prop.keyMap[rawValue];
+        }
+      }
+    }
+
+    // Handle _hide suffix properties
+    for (const key of Object.keys(params)) {
+      if (key.endsWith('_hide')) {
+        (state as any)[key] = params[key] === 'true';
+      }
+    }
+
+    // Seed management (SRS §35.2)
+    if (!state.seed) {
+      state.seed = Math.random().toString(36).substring(2, 8);
+    }
+    if (typeof (Math as any).seedrandom === 'function') {
+      (Math as any).seedrandom(state.seed);
+    }
+
+    return state;
   }
 
   /**
    * Serializes all state properties back into the URL hash fragment.
-   * Converts objects to their keys, arrays to comma-separated strings.
-   * Updates `window.location.hash` in place (no page reload).
-   *
    * SRS §4.2, §28.2, P3.8
    */
-  serialize(): void {
-    // TODO P3.8: Serialize state to window.location.hash
-    // Algorithm:
-    //   1. parts: string[] = []
-    //   2. For each prop in State.PROPS:
-    //      - value = this[prop.name]
-    //      - if Type.OBJECT: find the key in prop.keyMap whose value === current value
-    //      - if Type.ARRAY_NUMBER: value.join(',')
-    //      - if Type.BOOLEAN: value.toString()
-    //      - else: String(value)
-    //      - parts.push(`${prop.name}=${serializedValue}`)
-    //   3. Append _hide suffix properties
-    //   4. window.location.hash = parts.join('&')
-    throw new Error('Not implemented: State.prototype.serialize');
+  serialize(): string {
+    const parts: string[] = [];
+
+    for (const prop of State.PROPS) {
+      const val = (this as any)[prop.name];
+      if (val === undefined) continue;
+
+      let strVal = '';
+      if (prop.type === Type.OBJECT && prop.keyMap) {
+        for (const [k, v] of Object.entries(prop.keyMap)) {
+          if (v === val) {
+            strVal = k;
+            break;
+          }
+        }
+      } else if (prop.type === Type.ARRAY_NUMBER && Array.isArray(val)) {
+        strVal = val.join(',');
+      } else if (prop.type === Type.BOOLEAN) {
+        strVal = val ? 'true' : 'false';
+      } else {
+        strVal = String(val);
+      }
+
+      if (strVal !== '') {
+        parts.push(`${prop.name}=${encodeURIComponent(strVal)}`);
+      }
+    }
+
+    // Append _hide properties
+    for (const key of Object.keys(this)) {
+      if (key.endsWith('_hide') && (this as any)[key] === true) {
+        parts.push(`${key}=true`);
+      }
+    }
+
+    const hashStr = parts.join('&');
+    if (typeof window !== 'undefined' && window.location) {
+      window.location.hash = hashStr;
+    }
+    return hashStr;
   }
 }
+

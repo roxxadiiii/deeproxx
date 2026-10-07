@@ -66,34 +66,20 @@ export class HeatMap {
    * SRS §4.5, P6.1
    */
   constructor(container: d3.Selection<any>, numCells: number = 30) {
-    // TODO P6.1: Set up canvas element inside container
-    // 1. this.numCells = numCells
-    // 2. Append a <canvas> to container
-    // 3. Set canvas width and height from container dimensions
-    // 4. this.ctx = canvas.node().getContext('2d')
-    throw new Error('Not implemented: HeatMap constructor');
+    this.numCells = numCells;
+    let canvasSel = container.select('canvas');
+    if (canvasSel.empty()) {
+      canvasSel = container.append('canvas');
+    }
+    const canvas = canvasSel.node() as HTMLCanvasElement;
+    const containerNode = container.node() as HTMLElement;
+    this.width = containerNode ? containerNode.clientWidth || 300 : 300;
+    this.height = containerNode ? containerNode.clientHeight || 300 : 300;
+    canvas.width = this.width;
+    canvas.height = this.height;
+    this.ctx = canvas.getContext('2d')!;
   }
 
-  /**
-   * Renders the decision boundary by evaluating the network at each grid cell.
-   *
-   * Algorithm (SRS §4.5, §9.1):
-   *  1. Create a 30×30 grid of (x, y) coordinate pairs over [-6, 6]²
-   *  2. For each grid cell: call nn.forwardProp(network, [x, y]) to get prediction
-   *  3. Map prediction to RGBA color via COLOR_SCALE
-   *  4. Write all RGBA values to an ImageData buffer
-   *  5. ctx.putImageData(imageData, 0, 0)  — fast pixel write
-   *  6. Draw data points on top
-   *
-   * SRS §4.5, §46, P6.2 – P6.7
-   *
-   * @param network - The trained network to evaluate.
-   * @param inputs - The feature input builder function.
-   * @param trainData - Training samples to overlay.
-   * @param testData - Test samples to overlay (if showTestData is true).
-   * @param showTestData - Whether to render test data points.
-   * @param discretize - If true, snap predictions to +1 or -1 before coloring.
-   */
   updateBackground(
     network: nn.Node[][],
     inputs: (x: number, y: number) => number[],
@@ -102,57 +88,64 @@ export class HeatMap {
     showTestData: boolean,
     discretize: boolean,
   ): void {
-    // TODO P6.2 – P6.7: Implement heatmap rendering
-    // Step 1: Allocate ImageData (this.width × this.height)
-    // Step 2: Iterate grid cells (numCells × numCells)
-    //         - Map cell (i, j) to data coords (x, y) in [-EXTENT, +EXTENT]
-    //         - Call nn.forwardProp(network, inputs(x, y))
-    //         - If discretize: snap to ±1
-    //         - Convert color via COLOR_SCALE → parse RGB values
-    //         - Fill corresponding pixels in ImageData (pixel block per cell)
-    // Step 3: ctx.putImageData(imageData, 0, 0)
-    // Step 4: drawDataPoints(trainData, false)
-    // Step 5: if showTestData → drawDataPoints(testData, true)
-    throw new Error('Not implemented: HeatMap.updateBackground');
+    const cellWidth = this.width / this.numCells;
+    const cellHeight = this.height / this.numCells;
+
+    for (let i = 0; i < this.numCells; i++) {
+      for (let j = 0; j < this.numCells; j++) {
+        const x = -HeatMap.EXTENT + ((i + 0.5) / this.numCells) * (2 * HeatMap.EXTENT);
+        const y = HeatMap.EXTENT - ((j + 0.5) / this.numCells) * (2 * HeatMap.EXTENT);
+
+        const inputValues = inputs(x, y);
+        let pred = nn.forwardProp(network, inputValues);
+
+        if (discretize) {
+          pred = pred >= 0 ? 1 : -1;
+        }
+
+        const colorStr = COLOR_SCALE(pred);
+        this.ctx.fillStyle = colorStr;
+        this.ctx.fillRect(i * cellWidth, j * cellHeight, cellWidth + 0.5, cellHeight + 0.5);
+      }
+    }
+
+    this.drawDataPoints(trainData, false);
+    if (showTestData && testData) {
+      this.drawDataPoints(testData, true);
+    }
   }
 
-  /**
-   * Converts a data coordinate value to a canvas pixel position.
-   * Maps [-EXTENT, +EXTENT] → [0, canvasDimension].
-   * Note: Y-axis is flipped (data y=+6 → canvas y=0, data y=-6 → canvas y=height).
-   *
-   * SRS §46.3, P6.3
-   */
   private toPixelX(x: number): number {
-    // TODO P6.3: return (x + EXTENT) / (2 * EXTENT) * this.width
-    throw new Error('Not implemented: HeatMap.toPixelX');
+    return ((x + HeatMap.EXTENT) / (2 * HeatMap.EXTENT)) * this.width;
   }
 
   private toPixelY(y: number): number {
-    // TODO P6.3: return (EXTENT - y) / (2 * EXTENT) * this.height  ← Y-flip
-    throw new Error('Not implemented: HeatMap.toPixelY');
+    return ((HeatMap.EXTENT - y) / (2 * HeatMap.EXTENT)) * this.height;
   }
 
-  /**
-   * Draws dataset points as colored circles on the canvas.
-   * Training data: filled circles; Test data: ring-outlined circles.
-   *
-   * SRS §4.5, §41.3, §46.5, P6.7 – P6.8
-   *
-   * @param data - The data points to render.
-   * @param isTest - If true, renders as outlined rings (test data style).
-   */
   private drawDataPoints(
     data: { x: number; y: number; label: number }[],
     isTest: boolean,
   ): void {
-    // TODO P6.7 – P6.8: Draw each data point as a circle
-    // For each point:
-    //   px = toPixelX(point.x)
-    //   py = toPixelY(point.y)
-    //   color = COLOR_SCALE(point.label)
-    //   if isTest: draw ring outline (arc with no fill, stroke only)
-    //   else: draw filled circle
-    throw new Error('Not implemented: HeatMap.drawDataPoints');
+    if (!data) return;
+    for (const point of data) {
+      const px = this.toPixelX(point.x);
+      const py = this.toPixelY(point.y);
+      const colorStr = COLOR_SCALE(point.label);
+
+      this.ctx.beginPath();
+      this.ctx.arc(px, py, 3.5, 0, 2 * Math.PI);
+      if (isTest) {
+        this.ctx.strokeStyle = colorStr;
+        this.ctx.lineWidth = 1.5;
+        this.ctx.stroke();
+      } else {
+        this.ctx.fillStyle = colorStr;
+        this.ctx.fill();
+        this.ctx.strokeStyle = '#ffffff';
+        this.ctx.lineWidth = 0.5;
+        this.ctx.stroke();
+      }
+    }
   }
 }

@@ -502,8 +502,12 @@ export function updateWeights(
             learningRate * avgGrad -
             learningRate * regularizationRate * regulDer;
 
-          // L1 zero-crossing kill: if sign changed, weight goes to exactly 0
-          if (oldWeight * newWeight < 0) {
+          // L1 zero-crossing kill (SRS §43): if L1 regularization is active and sign changed, set weight to 0 and mark dead
+          if (
+            regularizationRate > 0 &&
+            link.regularization === RegularizationFunction.L1 &&
+            oldWeight * newWeight < 0
+          ) {
             link.weight = 0;
             link.isDead = true;
           } else {

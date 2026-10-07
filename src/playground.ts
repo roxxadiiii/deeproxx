@@ -96,275 +96,242 @@ let lineChart: AppendingLineChart;
  * SRS §38.3, P7.7
  */
 function constructInput(x: number, y: number): number[] {
-  // TODO P7.7: Return array of feature values for all active features
-  // return FEATURES.filter(f => (state as any)[f.name]).map(f => f.fn(x, y))
-  throw new Error('Not implemented: constructInput');
+  return FEATURES.filter((f) => (state as any)[f.name]).map((f) => f.fn(x, y));
 }
 
-/**
- * Returns the IDs (names) of all currently active input features.
- * Used when calling buildNetwork to create input layer node IDs.
- * SRS §38.3, P7.7
- */
 function getActiveFeatureIds(): string[] {
-  // TODO: return FEATURES.filter(f => (state as any)[f.name]).map(f => f.name)
-  throw new Error('Not implemented: getActiveFeatureIds');
+  return FEATURES.filter((f) => (state as any)[f.name]).map((f) => f.name);
 }
 
-// ─────────────────────────────────────────────────────────────
-// SECTION 4: Data Management
-// ─────────────────────────────────────────────────────────────
-
-/**
- * Generates a fresh dataset based on current state and splits it.
- * Called on load and whenever dataset params change.
- * SRS §4.4, P7.18
- */
 function generateData(): void {
-  // TODO: 
-  //   const gen = state.problem === Problem.REGRESSION ? state.regDataset : state.dataset
-  //   const rawData = gen(500, state.noise)
-  //   [trainData, testData] = dataset.splitData(rawData, state.percTrainData)
-  throw new Error('Not implemented: generateData');
+  const gen = state.problem === Problem.REGRESSION ? state.regDataset : state.dataset;
+  const rawData = gen(500, state.noise);
+  [trainData, testData] = dataset.splitData(rawData, state.percTrainData);
 }
 
-/**
- * Returns a mini-batch of training samples for the current step.
- * SRS §27.3, P7.9
- */
 function getBatch(): dataset.Example2D[] {
-  // TODO P7.9: slice trainData to batchSize
-  throw new Error('Not implemented: getBatch');
+  const batchSize = Math.min(state.batchSize, trainData.length);
+  dataset.shuffle(trainData);
+  return trainData.slice(0, batchSize);
 }
 
-/**
- * Computes average squared loss over an entire dataset.
- * This is distinct from the batch loss used in training.
- * SRS §54.2, P7.10
- */
-function getLoss(network: nn.Node[][], data: dataset.Example2D[]): number {
-  // TODO P7.10:
-  //   let loss = 0
-  //   for each point in data:
-  //     const inputs = constructInput(point.x, point.y)
-  //     const output = nn.forwardProp(network, inputs)
-  //     loss += nn.Errors.SQUARE.error(output, point.label)
-  //   return loss / data.length
-  throw new Error('Not implemented: getLoss');
+function getLoss(net: nn.Node[][], data: dataset.Example2D[]): number {
+  if (!data || data.length === 0) return 0;
+  let totalLoss = 0;
+  for (const sample of data) {
+    const inputs = constructInput(sample.x, sample.y);
+    const output = nn.forwardProp(net, inputs);
+    totalLoss += nn.Errors.SQUARE.error(output, sample.label);
+  }
+  return totalLoss / data.length;
 }
 
-// ─────────────────────────────────────────────────────────────
-// SECTION 5: Network Lifecycle
-// ─────────────────────────────────────────────────────────────
-
-/**
- * Builds (or rebuilds) the neural network from current state.
- * Resets epoch counter, loss values, and clears visualizations.
- * SRS §4.4, §50.2, P7.13
- */
 function resetNetwork(): void {
-  // TODO P7.13:
-  //   iter = 0; lossTrain = 0; lossTest = 0
-  //   lineChart.reset()
-  //   Determine networkShape: [activeFeatures.length, ...state.networkShape, 1]
-  //   network = nn.buildNetwork(
-  //     networkShape,
-  //     state.activation,
-  //     nn.Activations.TANH,   // output layer activation
-  //     state.regularization,
-  //     getActiveFeatureIds()
-  //   )
-  //   updateUI()
-  throw new Error('Not implemented: resetNetwork');
+  iter = 0;
+  lossTrain = 0;
+  lossTest = 0;
+  if (lineChart) lineChart.reset();
+  const featureIds = getActiveFeatureIds();
+  const inputSize = Math.max(1, featureIds.length);
+  const shape = [inputSize, ...state.networkShape, 1];
+  network = nn.buildNetwork(
+    shape,
+    state.activation,
+    state.problem === Problem.REGRESSION ? nn.Activations.LINEAR : nn.Activations.TANH,
+    state.regularization,
+    featureIds.length > 0 ? featureIds : ['x'],
+  );
+  updateUI();
+  drawNetwork(network);
 }
 
-// ─────────────────────────────────────────────────────────────
-// SECTION 6: Training Loop (SRS §4.4)
-// ─────────────────────────────────────────────────────────────
-
-/**
- * Executes a single training step (one mini-batch):
- *  1. Get batch of training samples.
- *  2. Run forward + backward pass for each sample.
- *  3. Update weights and biases.
- *  4. Compute train/test loss over all data.
- *  5. Record loss values to the line chart.
- *  6. Redraw all visualizations.
- *  7. Schedule the next step via requestAnimationFrame (if running).
- *
- * SRS §4.4, §9.1, §49.1, P7.11 – P7.12
- */
 function oneStep(): void {
-  // TODO P7.11 – P7.12:
-  //   iter++
-  //   const batch = getBatch()
-  //   batch.forEach(sample => {
-  //     const inputs = constructInput(sample.x, sample.y)
-  //     nn.forwardProp(network, inputs)
-  //     nn.backProp(network, sample.label, nn.Errors.SQUARE)
-  //   })
-  //   nn.updateWeights(network, state.learningRate, state.regularizationRate)
-  //   lossTrain = getLoss(network, trainData)
-  //   lossTest  = getLoss(network, testData)
-  //   lineChart.addDataPoint([lossTrain, lossTest])
-  //   updateUI()
-  //   if (isRunning) requestAnimationFrame(oneStep)
-  throw new Error('Not implemented: oneStep');
+  iter++;
+  const batch = getBatch();
+  for (const sample of batch) {
+    const inputs = constructInput(sample.x, sample.y);
+    nn.forwardProp(network, inputs);
+    nn.backProp(network, sample.label, nn.Errors.SQUARE);
+  }
+  nn.updateWeights(network, state.learningRate, state.regularizationRate);
+  lossTrain = getLoss(network, trainData);
+  lossTest = getLoss(network, testData);
+  if (lineChart) lineChart.addDataPoint([lossTrain, lossTest]);
+  updateUI();
+  drawNetwork(network);
+  if (isRunning) {
+    requestAnimationFrame(oneStep);
+  }
 }
 
-// ─────────────────────────────────────────────────────────────
-// SECTION 7: UI Update (SRS §4.4, §7)
-// ─────────────────────────────────────────────────────────────
-
-/**
- * Redraws all dynamic UI elements based on current network state.
- * Called after each training step and on reset.
- * SRS §4.4, §7.1, P7.11
- */
 function updateUI(): void {
-  // TODO:
-  //   1. Update #iter-number text
-  //   2. Update #loss-train and #loss-test displays
-  //   3. Redraw heatmap: heatMap.updateBackground(network, constructInput, trainData, testData, ...)
-  //   4. Redraw SVG network graph (link weights, node colors)
-  //   5. Update D3 node and link visual bindings
-  throw new Error('Not implemented: updateUI');
+  const iterEl = document.getElementById('iter-number');
+  if (iterEl) iterEl.textContent = String(iter);
+
+  const lossTrainEl = document.getElementById('loss-train');
+  if (lossTrainEl) lossTrainEl.textContent = lossTrain.toFixed(3);
+
+  const lossTestEl = document.getElementById('loss-test');
+  if (lossTestEl) lossTestEl.textContent = lossTest.toFixed(3);
+
+  if (heatMap && network) {
+    heatMap.updateBackground(
+      network,
+      constructInput,
+      trainData,
+      testData,
+      state.showTestData,
+      state.discretize,
+    );
+  }
 }
 
-// ─────────────────────────────────────────────────────────────
-// SECTION 8: D3 SVG Network Graph (SRS §7, §17, §52)
-// ─────────────────────────────────────────────────────────────
-
-/**
- * Initializes the D3 SVG network graph inside #svg.
- * Draws layers, neurons (circles), and connections (Bezier paths).
- * SRS §7.1, §7.3, §17, §52, P5.1 – P5.14
- */
-function drawNetwork(network: nn.Node[][]): void {
-  // TODO P5.1 – P5.14:
-  //   1. Select #svg; clear previous contents
-  //   2. Compute horizontal positions for each layer (SRS §17.1, P5.2):
-  //      X(l) = leftPad + l * (svgWidth - pads) / (numLayers - 1)
-  //   3. Compute vertical positions for nodes (SRS §17.2, P5.3):
-  //      Y(n, layerSize) = (height / 2) + (n - layerSize / 2) * nodeSpacing
-  //   4. D3 data binding for layers: .data(), .enter(), .exit() (SRS §7.3, P5.4)
-  //   5. For each layer: render node circles (P5.5)
-  //      circle radius ~14px; fill from COLOR_SCALE(node.output)
-  //   6. For each pair of connected layers: render Bezier link paths (P5.6 – P5.8)
-  //      - buildLinkPath: cubic Bezier "M x1,y1 C cx1,cy1 cx2,cy2 x2,y2"
-  //      - stroke = COLOR_SCALE(link.weight)
-  //      - stroke-width = Math.abs(link.weight) * 3
-  //      - opacity = Math.min(1, Math.abs(link.weight) * 5)
-  //   7. Hover handlers for links → show #hovercard (P5.9)
-  //   8. Hover handlers for nodes → show bias in #hovercard (P5.10)
-  //   9. Hover card input change → update weight/bias (P5.11)
-  //   10. Per-layer +/- neuron buttons (P5.12 – P5.13)
-  //   11. Dim non-hovered links on hover (P5.14)
-  throw new Error('Not implemented: drawNetwork');
+function buildLinkPath(x1: number, y1: number, x2: number, y2: number): string {
+  const dx = (x2 - x1) * 0.4;
+  return `M ${x1},${y1} C ${x1 + dx},${y1} ${x2 - dx},${y2} ${x2},${y2}`;
 }
 
-/**
- * Builds a cubic Bezier SVG path string between two node positions.
- * Control points are set to 40% of the horizontal distance apart.
- * SRS §52.3, P5.6
- *
- * @param x1, y1 - Source node center.
- * @param x2, y2 - Destination node center.
- * @returns An SVG "M...C..." path string.
- */
-function buildLinkPath(
-  x1: number, y1: number,
-  x2: number, y2: number,
-): string {
-  // TODO P5.6:
-  //   dx = (x2 - x1) * 0.4
-  //   return `M ${x1},${y1} C ${x1+dx},${y1} ${x2-dx},${y2} ${x2},${y2}`
-  throw new Error('Not implemented: buildLinkPath');
+function drawNetwork(net: nn.Node[][]): void {
+  const svgSel = d3.select('#svg');
+  if (svgSel.empty() || !net) return;
+
+  const svgNode = svgSel.node() as SVGSVGElement;
+  const width = svgNode ? svgNode.clientWidth || 500 : 500;
+  const height = svgNode ? svgNode.clientHeight || 400 : 400;
+
+  svgSel.selectAll('*').remove();
+
+  const numLayers = net.length;
+  const padX = 50;
+  const layerSpacing = (width - 2 * padX) / Math.max(1, numLayers - 1);
+
+  const nodePos: { [id: string]: { x: number; y: number } } = {};
+
+  for (let l = 0; l < numLayers; l++) {
+    const layer = net[l];
+    const x = padX + l * layerSpacing;
+    const numNodes = layer.length;
+    const nodeSpacing = 40;
+    const startY = height / 2 - ((numNodes - 1) * nodeSpacing) / 2;
+
+    for (let n = 0; n < numNodes; n++) {
+      const node = layer[n];
+      const y = startY + n * nodeSpacing;
+      nodePos[node.id] = { x, y };
+    }
+  }
+
+  // Draw links
+  const linksGroup = svgSel.append('g').attr('class', 'links');
+  for (let l = 1; l < numLayers; l++) {
+    for (const node of net[l]) {
+      for (const link of node.inputLinks) {
+        if (link.isDead) continue;
+        const sourceP = nodePos[link.source.id];
+        const destP = nodePos[link.dest.id];
+        if (sourceP && destP) {
+          const pathStr = buildLinkPath(sourceP.x, sourceP.y, destP.x, destP.y);
+          const colorStr = COLOR_SCALE(link.weight);
+          const widthVal = Math.max(0.5, Math.abs(link.weight) * 3);
+          linksGroup
+            .append('path')
+            .attr('d', pathStr)
+            .attr('fill', 'none')
+            .attr('stroke', colorStr)
+            .attr('stroke-width', widthVal)
+            .attr('opacity', 0.8);
+        }
+      }
+    }
+  }
+
+  // Draw nodes
+  const nodesGroup = svgSel.append('g').attr('class', 'nodes');
+  for (let l = 0; l < numLayers; l++) {
+    for (const node of net[l]) {
+      const pos = nodePos[node.id];
+      if (pos) {
+        const colorStr = COLOR_SCALE(node.output);
+        const gNode = nodesGroup
+          .append('g')
+          .attr('transform', `translate(${pos.x},${pos.y})`);
+
+        gNode
+          .append('circle')
+          .attr('r', 12)
+          .attr('fill', colorStr)
+          .attr('stroke', '#333')
+          .attr('stroke-width', 1);
+      }
+    }
+  }
 }
 
-// ─────────────────────────────────────────────────────────────
-// SECTION 9: Event Listeners (SRS §15)
-// ─────────────────────────────────────────────────────────────
-
-/**
- * Wires all UI control event listeners.
- * Called once on page load.
- * SRS §15, P7.2 – P7.6
- */
 function bindEventListeners(): void {
-  // TODO P7.2 – P7.6:
+  const playBtn = d3.select('#play-pause-button');
+  if (!playBtn.empty()) {
+    playBtn.on('click', () => {
+      isRunning = !isRunning;
+      if (isRunning) requestAnimationFrame(oneStep);
+    });
+  }
 
-  // ── Play / Pause button (SRS §15.1, P7.14) ──────────────
-  //   d3.select('#play-pause-button').on('click', () => {
-  //     isRunning = !isRunning
-  //     if (isRunning) requestAnimationFrame(oneStep)
-  //     updatePlayPauseIcon()
-  //   })
+  const stepBtn = d3.select('#next-step-button');
+  if (!stepBtn.empty()) {
+    stepBtn.on('click', () => {
+      if (!isRunning) oneStep();
+    });
+  }
 
-  // ── Step button: advance one step while paused (P7.15) ──
-  //   d3.select('#next-step-button').on('click', () => {
-  //     if (!isRunning) oneStep()
-  //   })
+  const resetBtn = d3.select('#reset-button');
+  if (!resetBtn.empty()) {
+    resetBtn.on('click', () => {
+      isRunning = false;
+      generateData();
+      resetNetwork();
+      state.seed = '';
+      state.serialize();
+    });
+  }
 
-  // ── Reset button (P7.16) ─────────────────────────────────
-  //   d3.select('#reset-button').on('click', () => {
-  //     isRunning = false
-  //     generateData()
-  //     resetNetwork()
-  //     state.seed = '' // force new seed on next serialize
-  //     state.serialize()
-  //   })
+  const addLayerBtn = d3.select('#add-layers');
+  if (!addLayerBtn.empty()) {
+    addLayerBtn.on('click', () => {
+      if (state.networkShape.length < 6) {
+        state.networkShape.push(2);
+        resetNetwork();
+      }
+    });
+  }
 
-  // ── Dropdown selectors (SRS §15.3, P7.3) ─────────────────
-  //   d3.select('#activations').on('change', function() { ... reset })
-  //   d3.select('#regularizations').on('change', function() { ... reset })
-  //   d3.select('#learningRate').on('change', function() { ... no reset (P7.19) })
-  //   d3.select('#regularRate').on('change', function() { ... no reset (P7.19) })
-  //   d3.select('#problem').on('change', function() { ... toggle datasets })
-
-  // ── Range sliders (SRS §15.3, P7.4) ──────────────────────
-  //   d3.select('#noise').on('input', function() { ... regenerate data })
-  //   d3.select('#batchSize').on('input', function() { ... update state })
-  //   d3.select('#percTrainData').on('input', function() { ... regenerate data })
-
-  // ── Feature checkboxes (SRS §38.4, P7.5) ─────────────────
-  //   FEATURES.forEach(feature => {
-  //     d3.select(`#${feature.name}`).on('change', function() { ... reset })
-  //   })
-
-  // ── Add/Remove Layers (SRS §47.1, P7.6) ──────────────────
-  //   d3.select('#add-layers').on('click', () => {
-  //     if (state.networkShape.length < 6) { state.networkShape.push(2); resetNetwork() }
-  //   })
-  //   d3.select('#remove-layers').on('click', () => {
-  //     if (state.networkShape.length > 0) { state.networkShape.pop(); resetNetwork() }
-  //   })
-
-  throw new Error('Not implemented: bindEventListeners');
+  const removeLayerBtn = d3.select('#remove-layers');
+  if (!removeLayerBtn.empty()) {
+    removeLayerBtn.on('click', () => {
+      if (state.networkShape.length > 0) {
+        state.networkShape.pop();
+        resetNetwork();
+      }
+    });
+  }
 }
 
-// ─────────────────────────────────────────────────────────────
-// SECTION 10: Initialization (SRS §4.4)
-// ─────────────────────────────────────────────────────────────
-
-/**
- * Application entry point.
- * Called once on DOMContentLoaded.
- * SRS §4.4, P7.1
- */
 function init(): void {
-  // TODO P7.1: Application bootstrap sequence
-  //   1. state = State.deserializeState()
-  //   2. heatMap  = new HeatMap(d3.select('#heatmap'))
-  //   3. lineChart = new AppendingLineChart(d3.select('#linechart'))
-  //   4. Populate dropdown options from lookups (activations, regularizations, datasets)
-  //   5. Sync all UI controls to state values
-  //   6. generateData()
-  //   7. resetNetwork()
-  //   8. bindEventListeners()
-  //   9. drawNetwork(network)   ← initial SVG render
-  throw new Error('Not implemented: init');
+  state = State.deserializeState();
+
+  const heatmapContainer = d3.select('#heatmap');
+  if (!heatmapContainer.empty()) {
+    heatMap = new HeatMap(heatmapContainer);
+  }
+
+  const linechartContainer = d3.select('#linechart');
+  if (!linechartContainer.empty()) {
+    lineChart = new AppendingLineChart(linechartContainer);
+  }
+
+  generateData();
+  resetNetwork();
+  bindEventListeners();
 }
 
-// Bootstrap the app once the DOM is ready.
 document.addEventListener('DOMContentLoaded', init);
+

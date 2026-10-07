@@ -57,65 +57,91 @@ export class AppendingLineChart {
    * @param yLabel - Label for the Y axis (e.g. "Loss").
    * SRS §4.6, P6.10
    */
+  private trainPath: d3.Selection<SVGPathElement>;
+  private testPath: d3.Selection<SVGPathElement>;
+
   constructor(
     container: d3.Selection<any>,
     xLabel: string = 'Epoch',
     yLabel: string = 'Loss',
   ) {
-    // TODO P6.10: Build SVG structure
-    // 1. Compute width and height from container dimensions minus margins
-    // 2. Append <svg> → <g> (main group translated by margins)
-    // 3. Initialize xScale as d3.scale.linear() domain [0, 1] range [0, width]
-    // 4. Initialize yScale as d3.scale.linear() domain [0, 1] range [height, 0]
-    // 5. Append X-axis and Y-axis groups
-    // 6. Create line generators (see TODO P6.11)
-    // 7. Append two <path> elements for train and test lines
-    throw new Error('Not implemented: AppendingLineChart constructor');
+    const containerNode = container.node() as HTMLElement;
+    const totalWidth = containerNode ? containerNode.clientWidth || 250 : 250;
+    const totalHeight = containerNode ? containerNode.clientHeight || 120 : 120;
+
+    this.width = totalWidth - AppendingLineChart.MARGIN.left - AppendingLineChart.MARGIN.right;
+    this.height = totalHeight - AppendingLineChart.MARGIN.top - AppendingLineChart.MARGIN.bottom;
+
+    let svgSel = container.select('svg');
+    if (svgSel.empty()) {
+      svgSel = container.append('svg');
+    }
+    this.svg = svgSel as d3.Selection<SVGSVGElement>;
+    this.svg.attr('width', totalWidth).attr('height', totalHeight);
+
+    this.svg.selectAll('*').remove();
+
+    const g = this.svg
+      .append('g')
+      .attr('transform', `translate(${AppendingLineChart.MARGIN.left},${AppendingLineChart.MARGIN.top})`);
+
+    this.xScale = d3.scale.linear().domain([0, 1]).range([0, this.width]);
+    this.yScale = d3.scale.linear().domain([0, 1]).range([this.height, 0]);
+
+    this.buildLineGenerators();
+
+    this.trainPath = g
+      .append('path')
+      .attr('class', 'train-line')
+      .attr('fill', 'none')
+      .attr('stroke', '#0877bd')
+      .attr('stroke-width', '1.5');
+
+    this.testPath = g
+      .append('path')
+      .attr('class', 'test-line')
+      .attr('fill', 'none')
+      .attr('stroke', '#f59322')
+      .attr('stroke-width', '1.5');
   }
 
-  /**
-   * Creates D3 line generators for train and test curves.
-   * X maps epoch index; Y maps loss value.
-   * SRS §4.6, P6.11
-   */
   private buildLineGenerators(): void {
-    // TODO P6.11:
-    // this.trainLine = d3.svg.line<number>()
-    //   .x((d, i) => this.xScale(i))
-    //   .y(d => this.yScale(d))
-    // this.testLine = same structure
-    throw new Error('Not implemented: AppendingLineChart.buildLineGenerators');
+    this.trainLine = d3.svg
+      .line<number>()
+      .x((_d, i) => this.xScale(i))
+      .y((d) => this.yScale(d));
+
+    this.testLine = d3.svg
+      .line<number>()
+      .x((_d, i) => this.xScale(i))
+      .y((d) => this.yScale(d));
   }
 
-  /**
-   * Appends a new data point to both loss history arrays and redraws.
-   * Rescales axes if the new max loss exceeds the current Y domain.
-   *
-   * @param values - [trainLoss, testLoss] for the current epoch.
-   * SRS §4.6, §54.5, P6.13
-   */
   addDataPoint(values: [number, number]): void {
-    // TODO P6.13: Implement data append and redraw
-    // 1. this.trainLossHistory.push(values[0])
-    // 2. this.testLossHistory.push(values[1])
-    // 3. Recompute xScale domain to [0, trainLossHistory.length]
-    // 4. Recompute yScale domain to [0, Math.max(...trainLossHistory, ...testLossHistory)]
-    // 5. Update X and Y axes
-    // 6. Redraw both <path> elements using line generators
-    throw new Error('Not implemented: AppendingLineChart.addDataPoint');
+    if (!values) return;
+    this.trainLossHistory.push(values[0]);
+    this.testLossHistory.push(values[1]);
+
+    const maxEpoch = Math.max(1, this.trainLossHistory.length - 1);
+    const maxLoss = Math.max(
+      1,
+      d3.max(this.trainLossHistory.concat(this.testLossHistory)) || 1,
+    );
+
+    this.xScale.domain([0, maxEpoch]);
+    this.yScale.domain([0, maxLoss]);
+
+    this.trainPath.attr('d', this.trainLine(this.trainLossHistory) || '');
+    this.testPath.attr('d', this.testLine(this.testLossHistory) || '');
   }
 
-  /**
-   * Clears all history and removes SVG paths.
-   * Called when the user resets the training session.
-   * SRS §4.6, P6.14
-   */
   reset(): void {
-    // TODO P6.14:
-    // this.trainLossHistory = []
-    // this.testLossHistory = []
-    // Reset xScale and yScale domains to [0, 1]
-    // Remove <path> elements for both lines
-    throw new Error('Not implemented: AppendingLineChart.reset');
+    this.trainLossHistory = [];
+    this.testLossHistory = [];
+    this.xScale.domain([0, 1]);
+    this.yScale.domain([0, 1]);
+    if (this.trainPath) this.trainPath.attr('d', '');
+    if (this.testPath) this.testPath.attr('d', '');
   }
 }
+

@@ -43,16 +43,14 @@ export type DataGenerator = (numSamples: number, noise: number) => Example2D[];
  * SRS §45.2, P2.9
  */
 export function normalRandom(mean: number = 0, variance: number = 1): number {
-  // TODO P2.9: Implement Box-Muller transform
-  // Algorithm (rejection sampling):
-  //   1. Loop:
-  //      v1 = 2 * Math.random() - 1
-  //      v2 = 2 * Math.random() - 1
-  //      s = v1 * v1 + v2 * v2
-  //      if s < 1 and s != 0: break
-  //   2. result = Math.sqrt(-2 * Math.log(s) / s) * v1
-  //   3. return mean + Math.sqrt(variance) * result
-  throw new Error('Not implemented: normalRandom');
+  let v1: number, v2: number, s: number;
+  do {
+    v1 = 2 * Math.random() - 1;
+    v2 = 2 * Math.random() - 1;
+    s = v1 * v1 + v2 * v2;
+  } while (s >= 1 || s === 0);
+  const result = Math.sqrt(-2 * Math.log(s) / s) * v1;
+  return mean + Math.sqrt(variance) * result;
 }
 
 /**
@@ -63,6 +61,13 @@ function dist(x: number, y: number): number {
 }
 
 /**
+ * Helper to map noise [0, 50] to a target range.
+ */
+function scaleNoise(noise: number, minOut: number = 0, maxOut: number = 1): number {
+  return minOut + (noise / 50) * (maxOut - minOut);
+}
+
+/**
  * In-place Fisher-Yates shuffle. Mutates the input array.
  * Uses Math.random() (seeded by seedrandom for reproducibility).
  * SRS §45.1, P2.10
@@ -70,12 +75,12 @@ function dist(x: number, y: number): number {
  * @param array - The array to shuffle in-place.
  */
 export function shuffle(array: any[]): void {
-  // TODO P2.10: Implement Fisher-Yates shuffle
-  // Algorithm:
-  //   for i = array.length - 1 downto 1:
-  //     j = Math.floor(Math.random() * (i + 1))
-  //     swap array[i] and array[j]
-  throw new Error('Not implemented: shuffle');
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const temp = array[i];
+    array[i] = array[j];
+    array[j] = temp;
+  }
 }
 
 /**
@@ -91,10 +96,12 @@ export function splitData(
   data: Example2D[],
   percTrain: number,
 ): [Example2D[], Example2D[]] {
-  // TODO P2.11: shuffle then slice at percTrain%
-  // trainData = data.slice(0, Math.floor(data.length * percTrain / 100))
-  // testData  = data.slice(trainData.length)
-  throw new Error('Not implemented: splitData');
+  const dataCopy = data.slice();
+  shuffle(dataCopy);
+  const numTrain = Math.floor((dataCopy.length * percTrain) / 100);
+  const trainData = dataCopy.slice(0, numTrain);
+  const testData = dataCopy.slice(numTrain);
+  return [trainData, testData];
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -103,95 +110,132 @@ export function splitData(
 
 /**
  * Generates the Circle dataset.
- *
- * Geometry:
- *  - Points sampled randomly within a circle of radius 5.
- *  - r < 2.5  → label +1 (inner cluster)
- *  - 3.5 < r < 5.0 → label -1 (outer ring)
- *  - Points in 2.5 ≤ r ≤ 3.5 are excluded (gap zone).
- *  - Noise adds uniform offset to coordinates.
- *
  * SRS §4.3.1, P2.3
  */
 export function classifyCircleData(
   numSamples: number,
   noise: number,
 ): Example2D[] {
-  // TODO P2.3: Generate circle data
-  // for each sample:
-  //   r = Math.random() * 5
-  //   angle = Math.random() * 2 * Math.PI
-  //   x = r * Math.cos(angle) + noise offset
-  //   y = r * Math.sin(angle) + noise offset
-  //   label: dist(x,y) < 2.5 → +1; else if dist(x,y) > 3.5 → -1; else skip
-  throw new Error('Not implemented: classifyCircleData');
+  const points: Example2D[] = [];
+  const radius = 5;
+  const numShapes = numSamples / 2;
+
+  // Generate positive points inside r < 2.5
+  for (let i = 0; i < numShapes; i++) {
+    const r = (Math.random() * radius * 0.5);
+    const angle = Math.random() * 2 * Math.PI;
+    const noiseX = (Math.random() - 0.5) * scaleNoise(noise, 0, 2);
+    const noiseY = (Math.random() - 0.5) * scaleNoise(noise, 0, 2);
+    const x = r * Math.sin(angle) + noiseX;
+    const y = r * Math.cos(angle) + noiseY;
+    points.push({ x, y, label: 1 });
+  }
+
+  // Generate negative points in outer ring (3.5 < r < 5.0)
+  for (let i = 0; i < numShapes; i++) {
+    const r = (Math.random() * radius * 0.3) + radius * 0.7;
+    const angle = Math.random() * 2 * Math.PI;
+    const noiseX = (Math.random() - 0.5) * scaleNoise(noise, 0, 2);
+    const noiseY = (Math.random() - 0.5) * scaleNoise(noise, 0, 2);
+    const x = r * Math.sin(angle) + noiseX;
+    const y = r * Math.cos(angle) + noiseY;
+    points.push({ x, y, label: -1 });
+  }
+
+  return points;
 }
 
 /**
  * Generates the XOR dataset.
- *
- * Geometry:
- *  - Random points (x, y) in [-5, 5].
- *  - Padding of 0.3 keeps points away from the axes.
- *  - x·y ≥ 0 (same-sign diagonal quadrant) → label +1.
- *  - x·y < 0 (opposite quadrant) → label -1.
- *
  * SRS §4.3.1, P2.4
  */
 export function classifyXORData(
   numSamples: number,
   noise: number,
 ): Example2D[] {
-  // TODO P2.4: Generate XOR data
-  // for each sample:
-  //   x = Math.random() * 10 - 5  (with noise and padding 0.3)
-  //   y = Math.random() * 10 - 5  (with noise and padding 0.3)
-  //   label = x * y >= 0 ? 1 : -1
-  throw new Error('Not implemented: classifyXORData');
+  const points: Example2D[] = [];
+  const padding = 0.3;
+
+  for (let i = 0; i < numSamples; i++) {
+    let x = Math.random() * 10 - 5;
+    let y = Math.random() * 10 - 5;
+
+    // Apply padding away from axes
+    if (Math.abs(x) < padding) x = x >= 0 ? padding : -padding;
+    if (Math.abs(y) < padding) y = y >= 0 ? padding : -padding;
+
+    const noiseX = (Math.random() - 0.5) * scaleNoise(noise, 0, 2);
+    const noiseY = (Math.random() - 0.5) * scaleNoise(noise, 0, 2);
+    x += noiseX;
+    y += noiseY;
+
+    const label = x * y >= 0 ? 1 : -1;
+    points.push({ x, y, label });
+  }
+
+  return points;
 }
 
 /**
  * Generates the Two Gaussian (Two Clusters) dataset.
- *
- * Geometry:
- *  - Cluster 1 centered at (2, 2), label +1.
- *  - Cluster 2 centered at (-2, -2), label -1.
- *  - Variance scales from 0.5 to 4.0 proportional to noise (0–50).
- *
  * SRS §4.3.1, P2.5
  */
 export function classifyTwoGaussData(
   numSamples: number,
   noise: number,
 ): Example2D[] {
-  // TODO P2.5: Generate two Gaussian clusters
-  // variance = scaleNoise(noise, 0, 50, 0.5, 4.0)
-  // for half samples: x = normalRandom(2, variance), y = normalRandom(2, variance), label +1
-  // for other half: x = normalRandom(-2, variance), y = normalRandom(-2, variance), label -1
-  throw new Error('Not implemented: classifyTwoGaussData');
+  const points: Example2D[] = [];
+  const variance = scaleNoise(noise, 0.5, 4.0);
+
+  for (let i = 0; i < numSamples / 2; i++) {
+    const x = normalRandom(2, variance);
+    const y = normalRandom(2, variance);
+    points.push({ x, y, label: 1 });
+  }
+
+  for (let i = 0; i < numSamples / 2; i++) {
+    const x = normalRandom(-2, variance);
+    const y = normalRandom(-2, variance);
+    points.push({ x, y, label: -1 });
+  }
+
+  return points;
 }
 
 /**
  * Generates the Spiral dataset.
- *
- * Geometry:
- *  - Spiral 1 (positive): r = (i/n)*5, angle = 1.75*(i/n)*2π.
- *  - Spiral 2 (negative): same radius, angle shifted by π.
- *  - Uniform noise added to coordinates.
- *
  * SRS §4.3.1, P2.6
  */
 export function classifySpiralData(
   numSamples: number,
   noise: number,
 ): Example2D[] {
-  // TODO P2.6: Generate spiral data using polar coordinates
-  // for i in 0..n/2:
-  //   r = i / (n/2) * 5
-  //   t = 1.75 * (i / (n/2)) * 2 * Math.PI
-  //   Spiral 1: x = r * sin(t) + noise, y = r * cos(t) + noise, label +1
-  //   Spiral 2: x = r * sin(t + PI) + noise, y = r * cos(t + PI) + noise, label -1
-  throw new Error('Not implemented: classifySpiralData');
+  const points: Example2D[] = [];
+  const n = numSamples / 2;
+
+  // Spiral 1 (label +1)
+  for (let i = 0; i < n; i++) {
+    const r = (i / n) * 5;
+    const t = 1.75 * (i / n) * 2 * Math.PI;
+    const noiseX = (Math.random() - 0.5) * scaleNoise(noise, 0, 2);
+    const noiseY = (Math.random() - 0.5) * scaleNoise(noise, 0, 2);
+    const x = r * Math.sin(t) + noiseX;
+    const y = r * Math.cos(t) + noiseY;
+    points.push({ x, y, label: 1 });
+  }
+
+  // Spiral 2 (label -1)
+  for (let i = 0; i < n; i++) {
+    const r = (i / n) * 5;
+    const t = 1.75 * (i / n) * 2 * Math.PI + Math.PI;
+    const noiseX = (Math.random() - 0.5) * scaleNoise(noise, 0, 2);
+    const noiseY = (Math.random() - 0.5) * scaleNoise(noise, 0, 2);
+    const x = r * Math.sin(t) + noiseX;
+    const y = r * Math.cos(t) + noiseY;
+    points.push({ x, y, label: -1 });
+  }
+
+  return points;
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -200,41 +244,63 @@ export function classifySpiralData(
 
 /**
  * Generates the Regression Plane dataset.
- *
- * Target function: z = x + y, normalized to [-1, 1].
- * Points sampled uniformly in [-6, 6]².
- *
  * SRS §4.3.2, P2.7
  */
 export function regressPlane(
   numSamples: number,
   noise: number,
 ): Example2D[] {
-  // TODO P2.7: Generate regression plane data
-  // for each sample:
-  //   x = Math.random() * 12 - 6 + noise offset
-  //   y = Math.random() * 12 - 6 + noise offset
-  //   label = (x + y) / 12  (normalized to [-1, 1])
-  throw new Error('Not implemented: regressPlane');
+  const points: Example2D[] = [];
+
+  for (let i = 0; i < numSamples; i++) {
+    let x = Math.random() * 12 - 6;
+    let y = Math.random() * 12 - 6;
+    const noiseX = (Math.random() - 0.5) * scaleNoise(noise, 0, 2);
+    const noiseY = (Math.random() - 0.5) * scaleNoise(noise, 0, 2);
+    x += noiseX;
+    y += noiseY;
+    const label = (x + y) / 12;
+    points.push({ x, y, label });
+  }
+
+  return points;
 }
 
 /**
  * Generates the Regression Gaussian dataset.
- *
- * Six Gaussian centers defined in 2D space.
- * The target at (x, y) is the maximum radial influence from any center.
- * Output is normalized to [-1, 1].
- *
  * SRS §4.3.2, §39.4, P2.8
  */
 export function regressGaussian(
   numSamples: number,
   noise: number,
 ): Example2D[] {
-  // TODO P2.8: Generate regression Gaussian data
-  // Define 6 Gaussian centers with (cx, cy, amplitude) values
-  // For each sample (x, y) in [-6,6]²:
-  //   label = max over centers of: amplitude * exp(-dist²(x-cx, y-cy))
-  //   label += noise offset; clamp to [-1, 1]
-  throw new Error('Not implemented: regressGaussian');
+  const points: Example2D[] = [];
+  const centers = [
+    { cx: -2, cy: 2, amp: 1.0 },
+    { cx: 2, cy: 2, amp: -0.8 },
+    { cx: -3, cy: -3, amp: 0.5 },
+    { cx: 3, cy: -2, amp: 0.9 },
+    { cx: 0, cy: 0, amp: -1.0 },
+    { cx: 0, cy: 4, amp: 0.7 },
+  ];
+
+  for (let i = 0; i < numSamples; i++) {
+    let x = Math.random() * 12 - 6;
+    let y = Math.random() * 12 - 6;
+    const noiseVal = (Math.random() - 0.5) * scaleNoise(noise, 0, 1);
+    
+    let maxVal = -Infinity;
+    for (const c of centers) {
+      const d2 = Math.pow(x - c.cx, 2) + Math.pow(y - c.cy, 2);
+      const val = c.amp * Math.exp(-d2 / 4);
+      if (val > maxVal) {
+        maxVal = val;
+      }
+    }
+    const label = Math.min(1, Math.max(-1, maxVal + noiseVal));
+    points.push({ x, y, label });
+  }
+
+  return points;
 }
+
