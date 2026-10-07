@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<!--
+  index.html — Deep Playground: Interactive Neural Network Visualization
+  SRS §6, §8, §23, §29.1, §29.2, §29.4
+  Roadmap: Phase 0 (P0.8, P0.10, P0.11), Phase 4 (P4.1 – P4.16)
+-->
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <!-- SRS §29.4, P11.13: viewport for responsive / mobile graceful degradation -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- SEO & Social (SRS §30.1, P0.11) -->
+  <title>DeepRoxx — Interactive Neural Network Visualization</title>
+  <meta name="description"
+    content="An interactive, browser-based neural network simulator. Visualize how weights, biases, and decision boundaries evolve during training — no server required." />
+  <meta property="og:title" content="Deep Playground — Neural Network Visualizer" />
+  <meta property="og:description"
+    content="Play with neural networks right in your browser. Adjust hyperparameters, datasets, and architectures in real time." />
+  <meta property="og:type" content="website" />
+  <!-- og:image populated by P0.11 (screenshot asset) -->
+
+  <!-- Google Fonts: Roboto 300, 400, 500  (SRS §6.2, P0.10) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet" />
+
+  <!-- Webpack injects bundle.js and bundle.css via HtmlWebpackPlugin -->
+</head>
+
+<body>
+
+  <!-- ══════════════════════════════════════════════════════════
+         Mobile Fallback Banner (SRS §30.2, P11.14)
+         Displayed only on narrow viewports via CSS media query.
+    ═══════════════════════════════════════════════════════════ -->
+  <div id="mobile-banner" role="banner" aria-live="polite">
+    ⚠️ Deep Playground is best experienced on a desktop browser (1024px+).
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+         Header (SRS §8, §23.2)
+    ═══════════════════════════════════════════════════════════ -->
+  <header role="banner">
+    <h1>Deep Playground</h1>
+    <p class="subtitle">
+      An interactive neural network visualizer. Adjust parameters and watch
+      the network learn in real time.
+    </p>
+  </header>
+
+  <!-- ══════════════════════════════════════════════════════════
+         Top Controls Bar (SRS §8, §15, §23.3)
+         Contains: run controls + all global hyperparameter selectors.
+    ═══════════════════════════════════════════════════════════ -->
+  <div id="top-controls" role="toolbar" aria-label="Training controls">
+
+    <!-- Run Controls (SRS §15.1, P4.2) -->
+    <div class="control-group run-controls">
+      <button id="reset-button" type="button" title="Reset the network and generate a new random seed"
+        aria-label="Reset network">
+        ↺ Reset
+      </button>
+
+      <button id="play-pause-button" type="button" title="Start or pause training" aria-label="Play or pause training">
+        ▶ Play
+      </button>
+
+      <button id="next-step-button" type="button" title="Advance training by one step while paused"
+        aria-label="Step forward one training step">
+        ⏭ Step
+      </button>
+
+      <!-- Epoch counter (SRS §15.1, §49.1, P7.17, P4.2) -->
+      <span class="iter-label">Epoch:</span>
+      <span id="iter-number" aria-live="polite" aria-label="Current training epoch">0</span>
+    </div>
+
+    <!-- Separator -->
+    <div class="control-separator" aria-hidden="true"></div>
+
+    <!-- Hyperparameter Selectors (SRS §5, §15.3, P4.3) -->
+    <div class="control-group param-controls">
+
+      <!-- Learning Rate (SRS §5) -->
+      <label for="learningRate">Learning rate</label>
+      <select id="learningRate" aria-label="Learning rate">
+        <option value="0.00001">0.00001</option>
+        <option value="0.0001">0.0001</option>
+        <option value="0.001">0.001</option>
+        <option value="0.003">0.003</option>
+        <option value="0.01">0.01</option>
+        <option value="0.03" selected>0.03</option>
+        <option value="0.1">0.1</option>
+        <option value="0.3">0.3</option>
+        <option value="1">1</option>
+        <option value="3">3</option>
+        <option value="10">10</option>
+      </select>
+
+      <!-- Activation Function (SRS §5) -->
+      <label for="activations">Activation</label>
+      <select id="activations" aria-label="Activation function">
+        <option value="relu">ReLU</option>
+        <option value="tanh" selected>Tanh</option>
+        <option value="sigmoid">Sigmoid</option>
+        <option value="linear">Linear</option>
+      </select>
+
+      <!-- Regularization Type (SRS §5) -->
+      <label for="regularizations">Regularization</label>
+      <select id="regularizations" aria-label="Regularization type">
+        <option value="none" selected>None</option>
+        <option value="L1">L1</option>
+        <option value="L2">L2</option>
+      </select>
+
+      <!-- Regularization Rate (SRS §5) -->
+      <label for="regularRate">Reg. rate</label>
+      <select id="regularRate" aria-label="Regularization rate">
+        <option value="0" selected>0</option>
+        <option value="0.001">0.001</option>
+        <option value="0.003">0.003</option>
+        <option value="0.01">0.01</option>
+        <option value="0.03">0.03</option>
+        <option value="0.1">0.1</option>
+        <option value="0.3">0.3</option>
+        <option value="1">1</option>
+        <option value="3">3</option>
+        <option value="10">10</option>
+      </select>
+
+      <!-- Problem Type (SRS §5) -->
+      <label for="problem">Problem type</label>
+      <select id="problem" aria-label="Problem type">
+        <option value="classification" selected>Classification</option>
+        <option value="regression">Regression</option>
+      </select>
+
+    </div><!-- /.param-controls -->
+  </div><!-- /#top-controls -->
+
+  <!-- ══════════════════════════════════════════════════════════
+         Main 4-Column Layout (SRS §6.1, §8, §23.4)
+    ═══════════════════════════════════════════════════════════ -->
+  <div id="main-part" role="main">
+
+    <!-- ── Column 1: Data (SRS §6.1, §23.4, P4.4) ────────── -->
+    <div class="column data" aria-label="Dataset selection and parameters">
+      <h2 class="column-title">DATA</h2>
+
+      <!-- Dataset Thumbnail Canvases (SRS §44, P2.14, P4.4) -->
+      <!-- Classification datasets -->
+      <div id="classify-datasets" class="dataset-thumbnails">
+        <p class="thumbnails-label">Select a dataset:</p>
+        <canvas id="canvas-circle" class="dataset-thumb" data-dataset="circle" width="80" height="80"
+          title="Circle dataset" role="button" tabindex="0" aria-label="Circle dataset"></canvas>
+        <canvas id="canvas-xor" class="dataset-thumb" data-dataset="xor" width="80" height="80" title="XOR dataset"
+          role="button" tabindex="0" aria-label="XOR dataset"></canvas>
+        <canvas id="canvas-gauss" class="dataset-thumb" data-dataset="gauss" width="80" height="80"
+          title="Gaussian clusters dataset" role="button" tabindex="0" aria-label="Gaussian clusters dataset"></canvas>
+        <canvas id="canvas-spiral" class="dataset-thumb" data-dataset="spiral" width="80" height="80"
+          title="Spiral dataset" role="button" tabindex="0" aria-label="Spiral dataset"></canvas>
+      </div>
+
+      <!-- Regression datasets (hidden when problem=classification) -->
+      <div id="regress-datasets" class="dataset-thumbnails hidden">
+        <p class="thumbnails-label">Select a dataset:</p>
+        <canvas id="canvas-reg-plane" class="dataset-thumb" data-dataset="reg-plane" width="80" height="80"
+          title="Regression plane dataset" role="button" tabindex="0" aria-label="Regression plane dataset"></canvas>
+        <canvas id="canvas-reg-gauss" class="dataset-thumb" data-dataset="reg-gauss" width="80" height="80"
+          title="Regression Gaussian dataset" role="button" tabindex="0"
+          aria-label="Regression Gaussian dataset"></canvas>
+      </div>
+
+      <!-- Data Parameters (SRS §5, P4.4) -->
+      <div class="slider-group">
+        <label for="percTrainData" aria-label="Training data ratio">
+          Ratio train to test:
+          <span id="percTrainData-display">50%</span>
+        </label>
+        <input id="percTrainData" type="range" min="10" max="90" step="10" value="50"
+          aria-label="Ratio of training to test data" aria-valuemin="10" aria-valuemax="90" />
+      </div>
+
+      <div class="slider-group">
+        <label for="noise" aria-label="Dataset noise level">
+          Noise:
+          <span id="noise-display">0</span>
+        </label>
+        <input id="noise" type="range" min="0" max="50" step="5" value="0" aria-label="Dataset noise level"
+          aria-valuemin="0" aria-valuemax="50" />
+      </div>
+
+      <div class="slider-group">
+        <label for="batchSize" aria-label="Mini-batch size">
+          Batch size:
+          <span id="batchSize-display">10</span>
+        </label>
+        <input id="batchSize" type="range" min="1" max="30" step="1" value="10" aria-label="Mini-batch size"
+          aria-valuemin="1" aria-valuemax="30" />
+      </div>
+
+      <button id="data-regen-button" type="button" title="Regenerate dataset with current settings">
+        ↺ Regenerate
+      </button>
+
+    </div><!-- /.column.data -->
+
+    <!-- ── Column 2: Features (SRS §6.1, §38, P4.5) ───────── -->
+    <div class="column features" aria-label="Input feature selection">
+      <h2 class="column-title">FEATURES</h2>
+      <p class="column-hint">Select which inputs to feed to the network:</p>
+
+      <!-- Feature checkboxes (SRS §38.2, P4.5) -->
+      <div class="feature-list">
+
+        <label class="feature-label" for="feature-x">
+          <input type="checkbox" id="feature-x" data-feature="x" checked aria-label="Feature X₁ (raw x)" />
+          <span class="feature-name">X₁</span>
+        </label>
+
+        <label class="feature-label" for="feature-y">
+          <input type="checkbox" id="feature-y" data-feature="y" checked aria-label="Feature X₂ (raw y)" />
+          <span class="feature-name">X₂</span>
+        </label>
+
+        <label class="feature-label" for="feature-xSquared">
+          <input type="checkbox" id="feature-xSquared" data-feature="xSquared" aria-label="Feature X₁ squared" />
+          <span class="feature-name">X₁²</span>
+        </label>
+
+        <label class="feature-label" for="feature-ySquared">
+          <input type="checkbox" id="feature-ySquared" data-feature="ySquared" aria-label="Feature X₂ squared" />
+          <span class="feature-name">X₂²</span>
+        </label>
+
+        <label class="feature-label" for="feature-xTimesY">
+          <input type="checkbox" id="feature-xTimesY" data-feature="xTimesY" aria-label="Feature X₁ times X₂" />
+          <span class="feature-name">X₁X₂</span>
+        </label>
+
+        <label class="feature-label" for="feature-sinX">
+          <input type="checkbox" id="feature-sinX" data-feature="sinX" aria-label="Feature sin(X₁)" />
+          <span class="feature-name">sin(X₁)</span>
+        </label>
+
+        <label class="feature-label" for="feature-sinY">
+          <input type="checkbox" id="feature-sinY" data-feature="sinY" aria-label="Feature sin(X₂)" />
+          <span class="feature-name">sin(X₂)</span>
+        </label>
+
+      </div><!-- /.feature-list -->
+    </div><!-- /.column.features -->
+
+    <!-- ── Column 3: Hidden Layers (SRS §6.1, §23.4, P4.6) ── -->
+    <div class="column hidden-layers" aria-label="Hidden layer configuration">
+      <h2 class="column-title">HIDDEN LAYERS</h2>
+
+      <!-- Layer add/remove controls (SRS §15.2, P4.6) -->
+      <div class="layer-controls" role="group" aria-label="Layer controls">
+        <button id="add-layers" type="button" title="Add a hidden layer (max 6)" aria-label="Add hidden layer">+
+          Layer</button>
+
+        <span id="num-layers" aria-live="polite" aria-label="Number of hidden layers">2 hidden layers</span>
+
+        <button id="remove-layers" type="button" title="Remove the last hidden layer" aria-label="Remove hidden layer">−
+          Layer</button>
+      </div>
+
+      <!-- D3 SVG Network Graph container (SRS §7, §8, P5.1) -->
+      <svg id="svg" role="img" aria-label="Neural network topology diagram" width="100%" height="450"></svg>
+
+      <!-- Hover Card (SRS §7.1, §42, P4.8) — hidden by default -->
+      <div id="hovercard" class="hovercard hidden" role="tooltip" aria-label="Weight or bias editor">
+        <div class="hovercard-content">
+          <span class="hovercard-label">Value:</span>
+          <input id="hovercard-input" type="number" step="0.1" aria-label="Edit weight or bias value" />
+        </div>
+      </div>
+
+    </div><!-- /.column.hidden-layers -->
+
+    <!-- ── Column 4: Output (SRS §6.1, §23.4, P4.7) ─────────  -->
+    <div class="column output" aria-label="Training output and decision boundary">
+      <h2 class="column-title">OUTPUT</h2>
+
+      <!-- Loss Display (SRS §54, P4.7) -->
+      <div class="loss-display" role="group" aria-label="Training and test loss">
+        <div class="loss-item">
+          <span class="loss-label">Train loss:</span>
+          <span id="loss-train" aria-live="polite" aria-label="Training loss">N/A</span>
+        </div>
+        <div class="loss-item">
+          <span class="loss-label">Test loss:</span>
+          <span id="loss-test" aria-live="polite" aria-label="Test loss">N/A</span>
+        </div>
+      </div>
+
+      <!-- Loss Curve Chart (SRS §4.6, P4.7, P6.10) -->
+      <div id="linechart" aria-label="Loss over training epochs"></div>
+
+      <!-- Decision Boundary Heatmap Canvas (SRS §4.5, P4.7, P6.1) -->
+      <div id="heatmap" aria-label="Decision boundary heatmap">
+        <!-- Canvas appended by HeatMap class at runtime -->
+      </div>
+
+      <!-- Output View Toggles (SRS §40, §41, P4.7) -->
+      <div class="output-toggles" role="group" aria-label="Display options">
+        <label for="show-test-data">
+          <input id="show-test-data" type="checkbox" aria-label="Show test data points on heatmap" />
+          Show test data
+        </label>
+
+        <label for="discretize">
+          <input id="discretize" type="checkbox" aria-label="Discretize decision boundary to binary" />
+          Discretize output
+        </label>
+      </div>
+
+    </div><!-- /.column.output -->
+
+  </div><!-- /#main-part -->
+
+  <!-- ══════════════════════════════════════════════════════════
+         Footer (SRS §12.17)
+    ═══════════════════════════════════════════════════════════ -->
+  <footer role="contentinfo">
+    <p>
+      <a href="https://github.com/roxxadiiii/deeproxx" target="_blank" rel="noopener noreferrer"
+        aria-label="View source on GitHub">GitHub</a>
+      &nbsp;|&nbsp;
+      Based on
+      <a href="https://playground.tensorflow.org" target="_blank" rel="noopener noreferrer">TensorFlow Playground</a>
+    </p>
+  </footer>
+
+</body>
+
+</html>

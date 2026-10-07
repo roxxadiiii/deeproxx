@@ -1,0 +1,56 @@
+{
+  "name": "deep-playground",
+  "version": "1.0.0",
+  "description": "Interactive Neural Network Visualization — Deep Playground",
+  "main": "src/playground.ts",
+  "scripts": {
+    "build": "webpack --mode production",
+    "serve-watch": "webpack serve --mode development --open",
+    "dev": "webpack serve --mode development",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": [
+    "neural-network",
+    "deep-learning",
+    "visualization",
+    "education",
+    "machine-learning"
+  ],
+  "author": "roxxadiiii",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "d3": "^3.5.17",
+    "seedrandom": "^2.4.2"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "css-loader": "^6.8.1",
+    "eslint": "^8.45.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "html-webpack-plugin": "^5.5.3",
+    "http-server": "^14.1.1",
+    "husky": "^8.0.3",
+    "lint-staged": "^13.2.3",
+    "mini-css-extract-plugin": "^2.7.6",
+    "prettier": "^3.0.0",
+    "style-loader": "^3.3.3",
+    "ts-loader": "^9.4.4",
+    "typescript": "^5.1.6",
+    "webpack": "^5.88.1",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^4.15.1"
+  },
+  "lint-staged": {
+    "src/**/*.ts": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,css}": [
+      "prettier --write"
+    ]
+  }
+}
