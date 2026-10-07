@@ -1,0 +1,1 @@
+(()=>{"use strict";document.addEventListener("DOMContentLoaded",function(){throw new Error("Not implemented: init")})})();
