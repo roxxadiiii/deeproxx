@@ -115,6 +115,10 @@ export declare class State {
     sinY: boolean;
     /** Random seed for deterministic dataset and weight initialization. */
     seed: string;
+    /** Whether to render test dataset points on the heatmap. */
+    showTestData: boolean;
+    /** Whether to discretize the heatmap output into binary classification outputs. */
+    discretize: boolean;
     /** Whether the tutorial UI is hidden. */
     tutorial: string;
     /**
@@ -134,23 +138,14 @@ export declare class State {
     static parseArray(value: string): string[];
     /**
      * Reads and parses the URL hash fragment to reconstruct State.
-     * Splits on `&` (parameter separator) and `=` (key-value separator).
-     * Falls back to defaults for missing or invalid parameters.
-     * Generates a fresh random seed if none is present in the URL.
-     *
      * SRS §4.2, §28.3, §35.2, P3.7
-     *
-     * @returns A fully populated State object.
      */
     static deserializeState(): State;
     /**
      * Serializes all state properties back into the URL hash fragment.
-     * Converts objects to their keys, arrays to comma-separated strings.
-     * Updates `window.location.hash` in place (no page reload).
-     *
      * SRS §4.2, §28.2, P3.8
      */
-    serialize(): void;
+    serialize(): string;
 }
 export {};
 //# sourceMappingURL=state.d.ts.map
