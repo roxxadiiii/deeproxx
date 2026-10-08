@@ -260,11 +260,19 @@ function drawNetwork(net: nn.Node[][]): void {
           .append('circle')
           .attr('r', 12)
           .attr('fill', colorStr)
-          .attr('stroke', '#333')
+          .attr('stroke', '#1d1d1f') // DESIGN.md colors.ink
           .attr('stroke-width', 1);
       }
     }
   }
+}
+
+/** Sync the sub-nav primary CTA label with the training state. */
+function updatePlayButton(): void {
+  const btn = document.getElementById('play-pause-button');
+  if (!btn) return;
+  btn.textContent = isRunning ? 'Pause' : 'Play';
+  btn.setAttribute('aria-pressed', String(isRunning));
 }
 
 function bindEventListeners(): void {
@@ -272,6 +280,7 @@ function bindEventListeners(): void {
   if (!playBtn.empty()) {
     playBtn.on('click', () => {
       isRunning = !isRunning;
+      updatePlayButton();
       if (isRunning) requestAnimationFrame(oneStep);
     });
   }
@@ -287,6 +296,7 @@ function bindEventListeners(): void {
   if (!resetBtn.empty()) {
     resetBtn.on('click', () => {
       isRunning = false;
+      updatePlayButton();
       generateData();
       resetNetwork();
       state.seed = '';
