@@ -1,7 +1,7 @@
 ---
 version: alpha
 name: Apple-design-analysis
-description: A photography-first interface that turns marketing into a museum gallery. Edge-to-edge product tiles alternate light and dark canvases, framed by SF Pro Display headlines with negative letter-spacing and a single Action Blue (#0066cc) interactive color. UI chrome recedes so the product can speak — no decorative gradients, no shadows on chrome, only the one signature drop-shadow under product imagery resting on a surface. A golden-ratio scale (φ = 1.618) guides spacing, radii, typography, layouts, and visualization proportions.
+description: A photography-first interface that turns marketing into a museum gallery. Edge-to-edge product tiles alternate light and dark canvases, framed by SF Pro Display headlines with negative letter-spacing and a single Action Blue (#0066cc) interactive color. UI chrome recedes so the product can speak — no decorative gradients, no shadows on chrome, only the one signature drop-shadow under product imagery resting on a surface. A golden-ratio scale (φ = 1.618) guides spacing, radii, typography, layouts, and visualization proportions. A minimal top-bar switch toggles and remembers the site-wide light or dark theme.
 golden-ratio: 1.618
 
 colors:
@@ -26,6 +26,23 @@ colors:
   surface-chip-translucent: "#d2d2d7"
   on-primary: "#ffffff"
   on-dark: "#ffffff"
+
+dark-theme:
+  ink: "#f4f4f5"
+  body: "#e6e7eb"
+  body-muted: "#c6c8cf"
+  ink-muted-80: "#c3c5cc"
+  ink-muted-48: "#a1a4ad"
+  divider-soft: "#34363c"
+  hairline: "#393b43"
+  canvas: "#121317"
+  canvas-parchment: "#1b1d22"
+  surface-pearl: "#24262d"
+  surface-card: "#24262d"
+  on-dark: "#16171b"
+  positive: "#50a9ed"
+  negative: "#f59322"
+  neutral: "#8b8e97"
 
 typography:
   hero-display:

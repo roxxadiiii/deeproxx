@@ -667,7 +667,7 @@ Every SRS section is mapped to at least one roadmap task below. **Zero gaps.**
 | :--- | :--- | :--- | :--- | :--- |
 | P14.1 | Define and apply a shared golden-ratio spacing and corner-radius token scale | ✅ | P13.1 | `styles.css`, `DESIGN.md` |
 | P14.2 | Apply a φ-based type scale and line-height hierarchy across UI copy and controls | ⬜ | P14.1 | `styles.css`, `DESIGN.md` |
-| P14.3 | Refine hero, page sections, columns, cards, and controls using golden-ratio proportions; place training controls below the main panel and keep them available as pills in fullscreen | 🔄 | P14.1 | `index.html`, `styles.css` |
+| P14.3 | Refine page and control proportions; keep training and fullscreen controls below the main panel; add a persistent site-wide light/dark switch in the top bar | 🔄 | P14.1 | `index.html`, `styles.css`, `src/playground.ts` |
 | P14.4 | Apply golden-ratio sizing and spacing relationships to SVG network nodes, layers, and links | ⬜ | P14.1 | `src/playground.ts` |
 | P14.5 | Apply golden-ratio proportions to loss-chart layout and heatmap presentation without changing data semantics | ⬜ | P14.1 | `src/linechart.ts`, `src/heatmap.ts` |
 | P14.6 | Verify the visual system at supported viewport sizes, in fullscreen, and with accessibility preferences | ⬜ | P14.2–P14.5 | Browser checks |

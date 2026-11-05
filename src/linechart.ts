@@ -99,14 +99,12 @@ export class AppendingLineChart {
       .append('path')
       .attr('class', 'train-line')
       .attr('fill', 'none')
-      .attr('stroke', '#0877bd')
       .attr('stroke-width', '1.5');
 
     this.testPath = g
       .append('path')
       .attr('class', 'test-line')
       .attr('fill', 'none')
-      .attr('stroke', '#f59322')
       .attr('stroke-width', '1.5');
   }
 

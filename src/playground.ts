@@ -56,6 +56,7 @@ let lossTrain: number = 0;
 let lossTest: number = 0;
 let heatMap: HeatMap;
 let lineChart: AppendingLineChart;
+const THEME_STORAGE_KEY = 'deeproxx-theme';
 
 // ─────────────────────────────────────────────────────────────
 // SECTION 3: Feature Input Builder (SRS §38.3)
@@ -258,7 +259,7 @@ function drawNetwork(net: nn.Node[][]): void {
           }
         });
 
-      plusG.append('circle').attr('r', 10).attr('fill', '#d2d2d7').attr('stroke', 'none');
+      plusG.append('circle').attr('r', 10).attr('stroke', 'none');
 
       plusG
         .append('text')
@@ -266,7 +267,6 @@ function drawNetwork(net: nn.Node[][]): void {
         .attr('dy', '3.5px')
         .attr('font-size', '12px')
         .attr('font-weight', 'bold')
-        .attr('fill', '#1d1d1f')
         .text('+');
 
       // − Button (below layer)
@@ -286,7 +286,6 @@ function drawNetwork(net: nn.Node[][]): void {
       minusG
         .append('circle')
         .attr('r', 10)
-        .attr('fill', '#d2d2d7')
         .attr('stroke', 'none');
 
       minusG
@@ -295,7 +294,6 @@ function drawNetwork(net: nn.Node[][]): void {
         .attr('dy', '3.5px')
         .attr('font-size', '12px')
         .attr('font-weight', 'bold')
-        .attr('fill', '#1d1d1f')
         .text('−');
     }
   }
@@ -367,7 +365,6 @@ function drawNetwork(net: nn.Node[][]): void {
           .append('circle')
           .attr('r', 12)
           .attr('fill', colorStr)
-          .attr('stroke', '#1d1d1f')
           .attr('stroke-width', 1)
           .style('cursor', 'pointer');
 
@@ -762,6 +759,7 @@ function initOceanBackground(): void {
 
 function init(): void {
   state = State.deserializeState();
+  initThemeToggle();
   initOceanBackground();
 
   const heatmapContainer = d3.select('#heatmap');
@@ -779,6 +777,33 @@ function init(): void {
   generateData();
   resetNetwork();
   bindEventListeners();
+}
+
+function initThemeToggle(): void {
+  const toggle = document.getElementById('theme-toggle');
+  if (!(toggle instanceof HTMLButtonElement)) return;
+
+  const applyTheme = (theme: 'light' | 'dark') => {
+    document.documentElement.dataset.theme = theme;
+    const nextTheme = theme === 'dark' ? 'light' : 'dark';
+    toggle.textContent = theme === 'dark' ? '☀' : '☾';
+    toggle.setAttribute('aria-label', `Switch to ${nextTheme} mode`);
+    toggle.title = `Switch to ${nextTheme} mode`;
+
+    const themeColor = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+    if (themeColor) themeColor.content = theme === 'dark' ? '#121317' : '#ffffff';
+  };
+
+  const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+  applyTheme(savedTheme === 'dark' ? 'dark' : 'light');
+
+  toggle.addEventListener('click', () => {
+    const theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+    localStorage.setItem(THEME_STORAGE_KEY, theme);
+    applyTheme(theme);
+    updateUI();
+    drawNetwork(network);
+  });
 }
 
 document.addEventListener('DOMContentLoaded', init);

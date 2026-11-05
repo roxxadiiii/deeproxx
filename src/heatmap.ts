@@ -133,6 +133,9 @@ export class HeatMap {
     isTest: boolean,
   ): void {
     if (!data) return;
+    const pointOutline = getComputedStyle(document.documentElement)
+      .getPropertyValue('--color-canvas')
+      .trim();
     for (const point of data) {
       const px = this.toPixelX(point.x);
       const py = this.toPixelY(point.y);
@@ -147,7 +150,7 @@ export class HeatMap {
       } else {
         this.ctx.fillStyle = colorStr;
         this.ctx.fill();
-        this.ctx.strokeStyle = '#ffffff';
+        this.ctx.strokeStyle = pointOutline;
         this.ctx.lineWidth = 0.5;
         this.ctx.stroke();
       }
