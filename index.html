@@ -39,34 +39,11 @@
   <canvas id="site-ocean" class="site-ocean" aria-hidden="true"></canvas>
 
   <!-- ══════════════════════════════════════════════════════════
-         Sub Nav — floating frosted pill (component.sub-nav-frosted)
-         Holds the run controls with the persistent primary CTA on the right.
+         Sub Nav — floating frosted brand pill (component.sub-nav-frosted)
     ═══════════════════════════════════════════════════════════ -->
-  <div class="sub-nav" role="toolbar" aria-label="Run controls">
+  <div class="sub-nav">
     <div class="sub-nav__inner">
       <span class="sub-nav__title">DeepRoxx</span>
-
-      <div class="sub-nav__actions run-controls">
-        <span class="epoch" aria-label="Current training epoch">
-          <span class="iter-label">Epoch</span>
-          <span id="iter-number" aria-live="polite">0</span>
-        </span>
-
-        <button id="reset-button" class="btn btn--utility" type="button"
-          title="Reset the network and generate a new random seed" aria-label="Reset network">
-          Reset
-        </button>
-
-        <button id="next-step-button" class="btn btn--utility" type="button"
-          title="Advance training by one step while paused" aria-label="Step forward one training step">
-          Step
-        </button>
-
-        <button id="play-pause-button" class="btn btn--primary" type="button" title="Start or pause training"
-          aria-label="Play or pause training">
-          Play
-        </button>
-      </div>
     </div>
   </div>
 
@@ -170,6 +147,7 @@
 
       <!-- Main 4-Column Layout (SRS §6.1, §22.1, P4.9) -->
       <div id="main-part">
+        <div class="main-part-columns">
 
         <!-- ── Column 1: Data (SRS §6.1, §23.4, P4.4) ────────── -->
         <div class="column data" aria-label="Dataset selection and parameters">
@@ -283,10 +261,6 @@
         <!-- ── Column 3: Hidden Layers (SRS §6.1, §23.4, P4.6) ── -->
         <div class="column hidden-layers" aria-label="Hidden layer configuration">
           <h3 class="column-title">Hidden layers</h3>
-          <button id="fullscreen-main" class="btn btn--utility" type="button" aria-pressed="false"
-            title="Show only the playground controls in fullscreen">
-            Fullscreen
-          </button>
 
           <!-- Layer add/remove controls (SRS §15.2, P4.6) -->
           <div class="layer-controls" role="group" aria-label="Layer controls">
@@ -348,6 +322,34 @@
             </label>
           </div>
         </div><!-- /.column.output -->
+        </div><!-- /.main-part-columns -->
+
+        <div class="run-controls" role="toolbar" aria-label="Training controls">
+          <span class="epoch" aria-label="Current training epoch">
+            <span class="iter-label">Epoch</span>
+            <span id="iter-number" aria-live="polite">0</span>
+          </span>
+
+          <button id="reset-button" class="btn btn--utility" type="button"
+            title="Reset the network and generate a new random seed" aria-label="Reset network">
+            Reset
+          </button>
+
+          <button id="next-step-button" class="btn btn--utility" type="button"
+            title="Advance training by one step while paused" aria-label="Step forward one training step">
+            Step
+          </button>
+
+          <button id="play-pause-button" class="btn btn--primary" type="button" title="Start or pause training"
+            aria-label="Play or pause training">
+            Play
+          </button>
+
+          <button id="fullscreen-main" class="btn btn--utility" type="button" aria-pressed="false"
+            title="Show only the playground controls in fullscreen">
+            Fullscreen
+          </button>
+        </div>
 
       </div><!-- /#main-part -->
     </section>

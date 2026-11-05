@@ -5,7 +5,7 @@
 > **Source of Truth:** `SRS.md` v4.0 (59 sections, ~1500+ lines)
 > **Generated With:** `roadmap-generator` skill (Enterprise Workflows)
 > **Coverage Guarantee:** Every SRS section §1–§59 is mapped to ≥1 task
-> **Total Phases:** 13 | **Total Tasks:** 361 | **Estimated Duration:** 20–24 weeks (solo, part-time)
+> **Total Phases:** 14 | **Total Tasks:** 367 | **Estimated Duration:** 20–24 weeks (solo, part-time)
 
 ---
 
@@ -28,11 +28,12 @@
 15. [Phase 11 — Security, Accessibility & Compatibility](#-phase-11--security-accessibility--compatibility)
 16. [Phase 12 — Deployment, Docs & Launch](#-phase-12--deployment-docs--launch)
 17. [Phase 13 — Visual Polish](#-phase-13--visual-polish)
-18. [Milestones](#-milestones)
-19. [Risk Register](#-risk-register)
-20. [Weekly Schedule](#-weekly-schedule)
-21. [Definition of Done](#-definition-of-done)
-22. [Progress Tracker Template](#-progress-tracker-template)
+18. [Phase 14 — Golden-Ratio Visual System](#-phase-14--golden-ratio-visual-system)
+19. [Milestones](#-milestones)
+20. [Risk Register](#-risk-register)
+21. [Weekly Schedule](#-weekly-schedule)
+22. [Definition of Done](#-definition-of-done)
+23. [Progress Tracker Template](#-progress-tracker-template)
 
 ---
 
@@ -180,6 +181,7 @@ Every SRS section is mapped to at least one roadmap task below. **Zero gaps.**
 | 11 | Security & A11y | CSP, keyboard, colorblind, browsers | 1 week | 🟡 |
 | 12 | Deployment & Docs | GH Pages, Netlify, README | 1 week | 🟢 |
 | 13 | Visual Polish | Subtle animated ASCII shark hero background | 1–2 days | 🟢 |
+| 14 | Golden-Ratio Visual System | Apply φ proportions to the UI and all playground visuals | 1 week | 🟡 |
 
 ---
 
@@ -656,6 +658,24 @@ Every SRS section is mapped to at least one roadmap task below. **Zero gaps.**
 
 ---
 
+## 📐 Phase 14 — Golden-Ratio Visual System
+
+**Goal:** Apply the golden ratio (φ = 1.618) consistently to spacing, typography, page layout, network geometry, and chart/heatmap presentation while preserving legibility and responsive behavior.
+**Duration:** 1 week | **Design Ref:** `DESIGN.md`
+
+| ID | Task | Status | Depends | Reference |
+| :--- | :--- | :--- | :--- | :--- |
+| P14.1 | Define and apply a shared golden-ratio spacing and corner-radius token scale | ✅ | P13.1 | `styles.css`, `DESIGN.md` |
+| P14.2 | Apply a φ-based type scale and line-height hierarchy across UI copy and controls | ⬜ | P14.1 | `styles.css`, `DESIGN.md` |
+| P14.3 | Refine hero, page sections, columns, cards, and controls using golden-ratio proportions; place training controls below the main panel and keep them available as pills in fullscreen | 🔄 | P14.1 | `index.html`, `styles.css` |
+| P14.4 | Apply golden-ratio sizing and spacing relationships to SVG network nodes, layers, and links | ⬜ | P14.1 | `src/playground.ts` |
+| P14.5 | Apply golden-ratio proportions to loss-chart layout and heatmap presentation without changing data semantics | ⬜ | P14.1 | `src/linechart.ts`, `src/heatmap.ts` |
+| P14.6 | Verify the visual system at supported viewport sizes, in fullscreen, and with accessibility preferences | ⬜ | P14.2–P14.5 | Browser checks |
+
+**Exit criteria:** A documented φ-based scale is used consistently across the interface and all visualizations; content remains readable, accessible, and responsive.
+
+---
+
 ## 🎯 Milestones
 
 | Milestone | After Phase | Success Criteria |
@@ -669,7 +689,8 @@ Every SRS section is mapped to at least one roadmap task below. **Zero gaps.**
 | M7: Verification Clean | P10 | All 52 numeric assertions pass |
 | M8: Hardened | P11 | 4 browsers, a11y, CSP, no security findings |
 | M9: Shipped | P12 | Live URL + README + v1.0.0 tag |
-| M10: Visual Polish | P13 | Accessible ASCII shark background in the hero |
+| M10: Visual Polish | P13 | Accessible ASCII shark background across the site |
+| M11: Golden-Ratio Design | P14 | φ-based proportions across UI and visualizations |
 
 ---
 
@@ -708,7 +729,8 @@ Every SRS section is mapped to at least one roadmap task below. **Zero gaps.**
 | 17 | P11 | Security/a11y | 4 browsers, CSP, a11y |
 | 18 | P12 | Deploy | Live URL + README |
 | 19 | P13 | Visual polish | Accessible animated hero background |
-| 20–24 | Buffer | Polish | Bug fixes, demo, launch |
+| 20 | P14 | Golden-ratio design | φ-based visual system |
+| 21–24 | Buffer | Polish | Bug fixes, demo, launch |
 
 ---
 
@@ -716,8 +738,8 @@ Every SRS section is mapped to at least one roadmap task below. **Zero gaps.**
 
 The project is **complete** when:
 
-1. ✅ All 13 phases exit criteria met
-2. ✅ All 361 tasks marked ✅
+1. ✅ All 14 phases exit criteria met
+2. ✅ All 367 tasks marked ✅
 3. ✅ All 5 SRS labs pass
 4. ✅ All 52 verification assertions pass (P10.1–P10.52)
 5. ✅ All 12 URL params round-trip
@@ -741,7 +763,7 @@ Save as `PROGRESS.md` and update weekly:
 ```markdown
 # Deep Playground — Progress Tracker
 
-## Current Phase: P0 — Foundation & Setup
+## Current Phase: P14 — Golden-Ratio Visual System
 
 ### Phase 0 Tasks
 - [x] P0.1 Initialize Git repo
@@ -752,8 +774,8 @@ Save as `PROGRESS.md` and update weekly:
 
 ### Coverage Matrix Status
 - SRS §1–§59 mapped: ✅
-- Tasks completed: 0 / 361
-- Phases completed: 0 / 13
+- Tasks completed: 307 / 367
+- Phases completed: 13 / 14
 
 ### Blockers
 - None
