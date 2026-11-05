@@ -17,6 +17,8 @@
 ───────────────────────────────────────────────────────────── */
 
 :root {
+  color-scheme: light;
+
   /* Brand & accent */
   --color-primary: #0066cc;
   --color-primary-focus: #0071e3;
@@ -39,6 +41,7 @@
   --color-canvas: #ffffff;
   --color-canvas-parchment: #f5f5f7;
   --color-surface-pearl: #fafafc;
+  --surface-card: #ffffff;
   --color-surface-tile-1: #272729;
   --color-surface-tile-2: #2a2a2c;
   --color-surface-tile-3: #252527;
@@ -46,6 +49,14 @@
   --color-surface-chip-translucent: rgba(210, 210, 215, 0.64);
   --color-on-primary: #ffffff;
   --color-on-dark: #ffffff;
+  --surface-nav: rgba(255, 255, 255, 0.85);
+  --surface-tile-light: rgba(255, 255, 255, 0.82);
+  --surface-tile-parchment: rgba(245, 245, 247, 0.82);
+  --surface-controls: rgba(255, 255, 255, 0.88);
+  --surface-fullscreen: rgba(245, 245, 247, 0.96);
+  --surface-hovercard: rgba(255, 255, 255, 0.8);
+  --surface-footer: rgba(245, 245, 247, 0.82);
+  --shadow-nav: 0 4px 24px rgba(0, 0, 0, 0.08);
 
   /* Data-visualization colors (SRS §6.2, §7.2, P4.10).
      These are content — the "product imagery" — not UI accents. */
@@ -92,6 +103,35 @@
   --transition-base: 0.2s ease;
 }
 
+html[data-theme='dark'] {
+  color-scheme: dark;
+  --color-ink: #f4f4f5;
+  --color-body: #e6e7eb;
+  --color-body-muted: #c6c8cf;
+  --color-ink-muted-80: #c3c5cc;
+  --color-ink-muted-48: #a1a4ad;
+  --color-divider-soft: #34363c;
+  --color-hairline: #393b43;
+  --hairline-soft: rgba(255, 255, 255, 0.14);
+  --color-canvas: #121317;
+  --color-canvas-parchment: #1b1d22;
+  --color-surface-pearl: #24262d;
+  --surface-card: #24262d;
+  --color-surface-chip-translucent: rgba(255, 255, 255, 0.16);
+  --color-on-dark: #16171b;
+  --color-positive: #50a9ed;
+  --color-neutral: #8b8e97;
+  --surface-nav: rgba(28, 30, 36, 0.94);
+  --surface-tile-light: rgba(18, 19, 23, 0.86);
+  --surface-tile-parchment: rgba(27, 29, 34, 0.9);
+  --surface-controls: rgba(31, 33, 40, 0.94);
+  --surface-fullscreen: rgba(20, 22, 27, 0.98);
+  --surface-hovercard: rgba(31, 33, 40, 0.96);
+  --surface-footer: rgba(27, 29, 34, 0.92);
+  --shadow-product: rgba(0, 0, 0, 0.55) 3px 5px 30px 0;
+  --shadow-nav: 0 4px 24px rgba(0, 0, 0, 0.35);
+}
+
 /* ─────────────────────────────────────────────────────────────
    SECTION 2: Reset & Base
 ───────────────────────────────────────────────────────────── */
@@ -136,6 +176,12 @@ body {
   pointer-events: none;
 }
 
+html[data-theme='dark'] .site-ocean {
+  opacity: 0.2;
+  filter: none;
+  mix-blend-mode: screen;
+}
+
 .sub-nav,
 #mobile-banner,
 main,
@@ -175,16 +221,17 @@ ul {
   width: calc(100% - 32px);
   max-width: var(--text-max);
   margin: 12px auto;
-  background: rgba(255, 255, 255, 0.85);
+  background: var(--surface-nav);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--hairline-soft);
   border-radius: 9999px;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-nav);
   transition: box-shadow var(--transition-base), background var(--transition-base);
 }
 
 .sub-nav__inner {
+  position: relative;
   width: 100%;
   height: 100%;
   margin: 0 auto;
@@ -193,6 +240,14 @@ ul {
   align-items: center;
   justify-content: center;
   gap: var(--space-md);
+}
+
+.theme-toggle {
+  position: absolute;
+  right: var(--space-xxs);
+  width: 36px;
+  height: 36px;
+  font-size: 18px;
 }
 
 .sub-nav__title {
@@ -369,12 +424,12 @@ button {
 }
 
 .tile--light {
-  background: rgba(255, 255, 255, 0.82);
+  background: var(--surface-tile-light);
   color: var(--color-ink);
 }
 
 .tile--parchment {
-  background: rgba(245, 245, 247, 0.82);
+  background: var(--surface-tile-parchment);
   color: var(--color-ink);
 }
 
@@ -535,7 +590,7 @@ label {
   padding: var(--space-xxs);
   border: 1px solid var(--hairline-soft);
   border-radius: var(--rounded-pill);
-  background: rgba(255, 255, 255, 0.88);
+  background: var(--surface-controls);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   backdrop-filter: blur(20px) saturate(180%);
 }
@@ -562,7 +617,7 @@ label {
   margin: 0;
   padding: 52px 16px 16px;
   justify-content: flex-start;
-  background: rgba(245, 245, 247, 0.96);
+  background: var(--surface-fullscreen);
   overflow: auto;
 }
 
@@ -579,10 +634,14 @@ label {
   z-index: 2;
 }
 
+html[data-theme='dark'] .select-pill {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2712%27 height=%278%27 viewBox=%270 0 12 8%27%3E%3Cpath d=%27M1 1.5l5 5 5-5%27 fill=%27none%27 stroke=%27%23f4f4f5%27 stroke-width=%271.6%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27/%3E%3C/svg%3E");
+}
+
 /* store-utility-card */
 .column {
   flex-shrink: 0;
-  background: var(--color-canvas);
+  background: var(--surface-card);
   color: var(--color-ink);
   border: 1px solid var(--color-hairline);
   border-radius: var(--rounded-lg);
@@ -788,9 +847,26 @@ input[type='checkbox'] {
   transition: fill var(--transition-base);
 }
 
+.layer-ctrls circle {
+  fill: var(--color-surface-chip-translucent);
+  stroke: none;
+}
+
+.layer-ctrls text {
+  fill: var(--color-ink);
+}
+
 .link {
   fill: none;
   transition: opacity var(--transition-base), stroke-width var(--transition-base);
+}
+
+.train-line {
+  stroke: var(--color-positive);
+}
+
+.test-line {
+  stroke: var(--color-negative);
 }
 
 .link.inactive {
@@ -816,7 +892,7 @@ input[type='checkbox'] {
 .hovercard {
   position: fixed;
   z-index: 100;
-  background: rgba(255, 255, 255, 0.8);
+  background: var(--surface-hovercard);
   -webkit-backdrop-filter: var(--frost);
   backdrop-filter: var(--frost);
   border: 1px solid var(--hairline-soft);
@@ -940,7 +1016,7 @@ input[type='number'] {
 ───────────────────────────────────────────────────────────── */
 
 .footer {
-  background: rgba(245, 245, 247, 0.82);
+  background: var(--surface-footer);
   color: var(--color-ink-muted-80);
   padding: 64px var(--space-md);
 }
