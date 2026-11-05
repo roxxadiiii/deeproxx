@@ -111,7 +111,6 @@ interface PropDescriptor {
  * SRS §4.2, §5, P3.3
  */
 export class State {
-
   // ── Training Parameters (SRS §5) ──────────────────────────
 
   /** SGD step size. Range: 0.00001 – 10. Default: 0.03. */
@@ -203,29 +202,54 @@ export class State {
    * SRS §4.2, P3.4
    */
   static PROPS: PropDescriptor[] = [
-    { name: 'activation',         type: Type.OBJECT,       keyMap: activations,     defaultValue: nn.Activations.TANH },
-    { name: 'regularization',     type: Type.OBJECT,       keyMap: regularizations, defaultValue: nn.RegularizationFunction.NONE },
-    { name: 'batchSize',          type: Type.NUMBER,                                defaultValue: 10 },
-    { name: 'dataset',            type: Type.OBJECT,       keyMap: datasets,        defaultValue: dataset.classifyCircleData },
-    { name: 'regDataset',         type: Type.OBJECT,       keyMap: regDatasets,     defaultValue: dataset.regressPlane },
-    { name: 'learningRate',       type: Type.NUMBER,                                defaultValue: 0.03 },
-    { name: 'regularizationRate', type: Type.NUMBER,                                defaultValue: 0 },
-    { name: 'noise',              type: Type.NUMBER,                                defaultValue: 0 },
-    { name: 'networkShape',       type: Type.ARRAY_NUMBER,                          defaultValue: [4, 2] },
-    { name: 'seed',               type: Type.STRING,                                defaultValue: '' },
-    { name: 'problem',            type: Type.OBJECT,       keyMap: { classification: Problem.CLASSIFICATION, regression: Problem.REGRESSION }, defaultValue: Problem.CLASSIFICATION },
-    { name: 'percTrainData',      type: Type.NUMBER,                                defaultValue: 50 },
-    { name: 'showTestData',       type: Type.BOOLEAN,                               defaultValue: false },
-    { name: 'discretize',         type: Type.BOOLEAN,                               defaultValue: false },
-    { name: 'x',                  type: Type.BOOLEAN,                               defaultValue: true },
+    {
+      name: 'activation',
+      type: Type.OBJECT,
+      keyMap: activations,
+      defaultValue: nn.Activations.TANH,
+    },
+    {
+      name: 'regularization',
+      type: Type.OBJECT,
+      keyMap: regularizations,
+      defaultValue: nn.RegularizationFunction.NONE,
+    },
+    { name: 'batchSize', type: Type.NUMBER, defaultValue: 10 },
+    {
+      name: 'dataset',
+      type: Type.OBJECT,
+      keyMap: datasets,
+      defaultValue: dataset.classifyCircleData,
+    },
+    {
+      name: 'regDataset',
+      type: Type.OBJECT,
+      keyMap: regDatasets,
+      defaultValue: dataset.regressPlane,
+    },
+    { name: 'learningRate', type: Type.NUMBER, defaultValue: 0.03 },
+    { name: 'regularizationRate', type: Type.NUMBER, defaultValue: 0 },
+    { name: 'noise', type: Type.NUMBER, defaultValue: 0 },
+    { name: 'networkShape', type: Type.ARRAY_NUMBER, defaultValue: [4, 2] },
+    { name: 'seed', type: Type.STRING, defaultValue: '' },
+    {
+      name: 'problem',
+      type: Type.OBJECT,
+      keyMap: { classification: Problem.CLASSIFICATION, regression: Problem.REGRESSION },
+      defaultValue: Problem.CLASSIFICATION,
+    },
+    { name: 'percTrainData', type: Type.NUMBER, defaultValue: 50 },
+    { name: 'showTestData', type: Type.BOOLEAN, defaultValue: false },
+    { name: 'discretize', type: Type.BOOLEAN, defaultValue: false },
+    { name: 'x', type: Type.BOOLEAN, defaultValue: true },
 
-    { name: 'y',                  type: Type.BOOLEAN,                               defaultValue: true },
-    { name: 'xSquared',           type: Type.BOOLEAN,                               defaultValue: false },
-    { name: 'ySquared',           type: Type.BOOLEAN,                               defaultValue: false },
-    { name: 'xTimesY',            type: Type.BOOLEAN,                               defaultValue: false },
-    { name: 'sinX',               type: Type.BOOLEAN,                               defaultValue: false },
-    { name: 'sinY',               type: Type.BOOLEAN,                               defaultValue: false },
-    { name: 'tutorial',           type: Type.STRING,                                defaultValue: '' },
+    { name: 'y', type: Type.BOOLEAN, defaultValue: true },
+    { name: 'xSquared', type: Type.BOOLEAN, defaultValue: false },
+    { name: 'ySquared', type: Type.BOOLEAN, defaultValue: false },
+    { name: 'xTimesY', type: Type.BOOLEAN, defaultValue: false },
+    { name: 'sinX', type: Type.BOOLEAN, defaultValue: false },
+    { name: 'sinY', type: Type.BOOLEAN, defaultValue: false },
+    { name: 'tutorial', type: Type.STRING, defaultValue: '' },
   ];
 
   // ─────────────────────────────────────────────────────────
@@ -251,7 +275,10 @@ export class State {
    */
   static deserializeState(): State {
     const state = new State();
-    const hash = typeof window !== 'undefined' && window.location.hash ? window.location.hash.slice(1) : '';
+    const hash =
+      typeof window !== 'undefined' && window.location.hash
+        ? window.location.hash.slice(1)
+        : '';
     const params: { [key: string]: string } = {};
 
     if (hash) {
@@ -276,7 +303,9 @@ export class State {
       } else if (prop.type === Type.STRING) {
         (state as any)[prop.name] = rawValue;
       } else if (prop.type === Type.ARRAY_NUMBER) {
-        const arr = State.parseArray(rawValue).map(Number).filter(n => !isNaN(n));
+        const arr = State.parseArray(rawValue)
+          .map(Number)
+          .filter((n) => !isNaN(n));
         if (arr.length > 0) (state as any)[prop.name] = arr;
       } else if (prop.type === Type.OBJECT && prop.keyMap) {
         if (prop.keyMap[rawValue] !== undefined) {
@@ -349,4 +378,3 @@ export class State {
     return hashStr;
   }
 }
-

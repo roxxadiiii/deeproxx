@@ -96,7 +96,37 @@ for (let epoch = 0; epoch < 500; epoch++) {
 assert(loss < 0.05, `XOR training loss converged: ${loss.toFixed(4)} < 0.05`);
 
 // -------------------------------------------------------------
-// 5. Linear Collapse Check (P1.18, SRS §3.6)
+// 5. Backprop Finite-Difference Gradient Check (P1.20)
+// -------------------------------------------------------------
+const bpNet = buildNetwork([2, 3, 1], Activations.TANH, Activations.TANH, RegularizationFunction.NONE, ["x1", "x2"], false);
+const bpInput = [0.4, -0.7];
+const bpTarget = 1.0;
+
+// Compute analytical gradient
+forwardProp(bpNet, bpInput);
+backProp(bpNet, bpTarget, Errors.SQUARE);
+const testLink = bpNet[1][0].inputLinks[0];
+const analyticalGrad = testLink.errorDer;
+
+// Compute numerical gradient via central finite differences
+const bpEps = 1e-5;
+const origWeight = testLink.weight;
+
+testLink.weight = origWeight + bpEps;
+const outPlus = forwardProp(bpNet, bpInput);
+const lossPlus = Errors.SQUARE.error(outPlus, bpTarget);
+
+testLink.weight = origWeight - bpEps;
+const outMinus = forwardProp(bpNet, bpInput);
+const lossMinus = Errors.SQUARE.error(outMinus, bpTarget);
+
+testLink.weight = origWeight; // restore
+const numericalGrad = (lossPlus - lossMinus) / (2 * bpEps);
+
+assertClose(analyticalGrad, numericalGrad, 1e-4, "Backprop finite-difference gradient check on 3-layer network (P1.20)");
+
+// -------------------------------------------------------------
+// 6. Linear Collapse Check (P1.18, SRS §3.6)
 // -------------------------------------------------------------
 const linNet = buildNetwork([2, 3, 3, 1], Activations.LINEAR, Activations.LINEAR, RegularizationFunction.NONE, ["x1", "x2"], false);
 const out1 = forwardProp(linNet, [0.5, -0.2]);

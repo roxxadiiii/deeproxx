@@ -1,11 +1,11 @@
-# 🗺️ Deep Playground — Complete Development Roadmap (Zero-Gap Edition)
+# 🗺️ DeepRoxx — Complete Development Roadmap (Zero-Gap Edition)
 
-> **Project:** Deep Playground (Interactive Neural Network Visualization)
+> **Project:** DeepRoxx (Interactive Neural Network Visualization)
 > **Author:** roxxadiiii
 > **Source of Truth:** `SRS.md` v4.0 (59 sections, ~1500+ lines)
 > **Generated With:** `roadmap-generator` skill (Enterprise Workflows)
 > **Coverage Guarantee:** Every SRS section §1–§59 is mapped to ≥1 task
-> **Total Phases:** 12 | **Total Tasks:** 358 | **Estimated Duration:** 20–24 weeks (solo, part-time)
+> **Total Phases:** 13 | **Total Tasks:** 361 | **Estimated Duration:** 20–24 weeks (solo, part-time)
 
 ---
 
@@ -27,11 +27,12 @@
 14. [Phase 10 — QA, Edge Cases & Verification](#-phase-10--qa-edge-cases--verification)
 15. [Phase 11 — Security, Accessibility & Compatibility](#-phase-11--security-accessibility--compatibility)
 16. [Phase 12 — Deployment, Docs & Launch](#-phase-12--deployment-docs--launch)
-17. [Milestones](#-milestones)
-18. [Risk Register](#-risk-register)
-19. [Weekly Schedule](#-weekly-schedule)
-20. [Definition of Done](#-definition-of-done)
-21. [Progress Tracker Template](#-progress-tracker-template)
+17. [Phase 13 — Visual Polish](#-phase-13--visual-polish)
+18. [Milestones](#-milestones)
+19. [Risk Register](#-risk-register)
+20. [Weekly Schedule](#-weekly-schedule)
+21. [Definition of Done](#-definition-of-done)
+22. [Progress Tracker Template](#-progress-tracker-template)
 
 ---
 
@@ -178,6 +179,7 @@ Every SRS section is mapped to at least one roadmap task below. **Zero gaps.**
 | 10 | QA & Verification | Numeric assertions, edge cases | 2 weeks | 🔴 |
 | 11 | Security & A11y | CSP, keyboard, colorblind, browsers | 1 week | 🟡 |
 | 12 | Deployment & Docs | GH Pages, Netlify, README | 1 week | 🟢 |
+| 13 | Visual Polish | Subtle animated ASCII shark hero background | 1–2 days | 🟢 |
 
 ---
 
@@ -335,6 +337,8 @@ Every SRS section is mapped to at least one roadmap task below. **Zero gaps.**
 | P4.14 | Test ultra-wide (>1400px): layout should center with equal margins | ✅ | P4.9 | §29.4 |
 | P4.15 | Add `aria-label` to all range sliders | ✅ | P4.4 | §29.2 |
 | P4.16 | Add `<label>` for every `<select>` element | ✅ | P4.3 | §29.2 |
+| P4.17 | Remove the dark how-it-works tile and move unique explanatory details to the footer | ✅ | P4.1 | — |
+| P4.18 | Make the playground cards more compact and add fullscreen mode for `#main-part` only | ✅ | P4.9 | — |
 
 **Exit criteria:** All controls render; layout matches §6.1; keyboard Tab works; ultra-wide centers.
 
@@ -639,6 +643,19 @@ Every SRS section is mapped to at least one roadmap task below. **Zero gaps.**
 
 ---
 
+## 🦈 Phase 13 — Visual Polish
+
+**Goal:** Add a subtle, accessible ASCII shark animation behind the hero without competing with the playground visualization.
+**Duration:** 1–2 days | **Reference:** [stackedlol/ascii-sharks](https://github.com/stackedlol/ascii-sharks) (MIT)
+
+| ID | Task | Status | Depends | Reference |
+| :--- | :--- | :--- | :--- | :--- |
+| P13.1 | Vendor the MIT-licensed canvas engine and integrate several high-contrast sharks as a fixed site-wide background with attribution, reduced-motion handling, and a graceful feature fallback | ✅ | P12.1 | — |
+
+**Exit criteria:** Several visible sharks animate behind the full site, pause when off-screen, respect reduced motion, and do not interfere with page controls or the playground.
+
+---
+
 ## 🎯 Milestones
 
 | Milestone | After Phase | Success Criteria |
@@ -652,6 +669,7 @@ Every SRS section is mapped to at least one roadmap task below. **Zero gaps.**
 | M7: Verification Clean | P10 | All 52 numeric assertions pass |
 | M8: Hardened | P11 | 4 browsers, a11y, CSP, no security findings |
 | M9: Shipped | P12 | Live URL + README + v1.0.0 tag |
+| M10: Visual Polish | P13 | Accessible ASCII shark background in the hero |
 
 ---
 
@@ -689,7 +707,8 @@ Every SRS section is mapped to at least one roadmap task below. **Zero gaps.**
 | 15–16 | P10 | Verification | 52 assertions pass |
 | 17 | P11 | Security/a11y | 4 browsers, CSP, a11y |
 | 18 | P12 | Deploy | Live URL + README |
-| 19–24 | Buffer | Polish | Bug fixes, demo, launch |
+| 19 | P13 | Visual polish | Accessible animated hero background |
+| 20–24 | Buffer | Polish | Bug fixes, demo, launch |
 
 ---
 
@@ -697,8 +716,8 @@ Every SRS section is mapped to at least one roadmap task below. **Zero gaps.**
 
 The project is **complete** when:
 
-1. ✅ All 12 phases exit criteria met
-2. ✅ All 358 tasks marked ✅
+1. ✅ All 13 phases exit criteria met
+2. ✅ All 361 tasks marked ✅
 3. ✅ All 5 SRS labs pass
 4. ✅ All 52 verification assertions pass (P10.1–P10.52)
 5. ✅ All 12 URL params round-trip
@@ -733,8 +752,8 @@ Save as `PROGRESS.md` and update weekly:
 
 ### Coverage Matrix Status
 - SRS §1–§59 mapped: ✅
-- Tasks completed: 0 / 358
-- Phases completed: 0 / 12
+- Tasks completed: 0 / 361
+- Phases completed: 0 / 13
 
 ### Blockers
 - None

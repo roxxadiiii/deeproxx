@@ -62,15 +62,17 @@ export class AppendingLineChart {
 
   constructor(
     container: d3.Selection<any>,
-    xLabel: string = 'Epoch',
-    yLabel: string = 'Loss',
+    _xLabel: string = 'Epoch',
+    _yLabel: string = 'Loss',
   ) {
     const containerNode = container.node() as HTMLElement;
     const totalWidth = containerNode ? containerNode.clientWidth || 250 : 250;
     const totalHeight = containerNode ? containerNode.clientHeight || 120 : 120;
 
-    this.width = totalWidth - AppendingLineChart.MARGIN.left - AppendingLineChart.MARGIN.right;
-    this.height = totalHeight - AppendingLineChart.MARGIN.top - AppendingLineChart.MARGIN.bottom;
+    this.width =
+      totalWidth - AppendingLineChart.MARGIN.left - AppendingLineChart.MARGIN.right;
+    this.height =
+      totalHeight - AppendingLineChart.MARGIN.top - AppendingLineChart.MARGIN.bottom;
 
     let svgSel = container.select('svg');
     if (svgSel.empty()) {
@@ -83,7 +85,10 @@ export class AppendingLineChart {
 
     const g = this.svg
       .append('g')
-      .attr('transform', `translate(${AppendingLineChart.MARGIN.left},${AppendingLineChart.MARGIN.top})`);
+      .attr(
+        'transform',
+        `translate(${AppendingLineChart.MARGIN.left},${AppendingLineChart.MARGIN.top})`,
+      );
 
     this.xScale = d3.scale.linear().domain([0, 1]).range([0, this.width]);
     this.yScale = d3.scale.linear().domain([0, 1]).range([this.height, 0]);
@@ -144,4 +149,3 @@ export class AppendingLineChart {
     if (this.testPath) this.testPath.attr('d', '');
   }
 }
-

@@ -2,7 +2,7 @@
 <!--
   index.html — Deep Playground: Interactive Neural Network Visualization
   SRS §6, §8, §23, §29.1, §29.2, §29.4
-  Roadmap: Phase 0 (P0.8, P0.10, P0.11), Phase 4 (P4.1 – P4.16)
+  Roadmap: Phase 0 (P0.8, P0.10, P0.11), Phase 4 (P4.1 – P4.17), Phase 13 (P13.1)
   Visual language: DESIGN.md (photography-first, single Action Blue accent,
   alternating full-bleed tiles, global-nav + sub-nav-frosted chrome).
 -->
@@ -17,7 +17,7 @@
   <title>DeepRoxx — Interactive Neural Network Visualization</title>
   <meta name="description"
     content="An interactive, browser-based neural network simulator. Visualize how weights, biases, and decision boundaries evolve during training — no server required." />
-  <meta property="og:title" content="Deep Playground — Neural Network Visualizer" />
+  <meta property="og:title" content="DeepRoxx — Neural Network Visualizer" />
   <meta property="og:description"
     content="Play with neural networks right in your browser. Adjust hyperparameters, datasets, and architectures in real time." />
   <meta property="og:type" content="website" />
@@ -36,29 +36,15 @@
 
 <body>
 
-  <!-- ══════════════════════════════════════════════════════════
-         Global Nav (DESIGN.md › component.global-nav)
-    ═══════════════════════════════════════════════════════════ -->
-  <nav class="global-nav" aria-label="Global">
-    <div class="global-nav__inner">
-      <a class="global-nav__brand" href="#top" aria-label="DeepRoxx home">DeepRoxx</a>
-      <ul class="global-nav__links">
-        <li><a href="#playground">Playground</a></li>
-        <li><a href="#how-it-works">How it works</a></li>
-        <li><a href="https://github.com/roxxadiiii/deeproxx/tree/main/docs" target="_blank"
-            rel="noopener noreferrer">Docs</a></li>
-        <li><a href="https://github.com/roxxadiiii/deeproxx" target="_blank" rel="noopener noreferrer">GitHub</a></li>
-      </ul>
-    </div>
-  </nav>
+  <canvas id="site-ocean" class="site-ocean" aria-hidden="true"></canvas>
 
   <!-- ══════════════════════════════════════════════════════════
-         Sub Nav — frosted, sticky (DESIGN.md › component.sub-nav-frosted)
+         Sub Nav — floating frosted pill (component.sub-nav-frosted)
          Holds the run controls with the persistent primary CTA on the right.
     ═══════════════════════════════════════════════════════════ -->
   <div class="sub-nav" role="toolbar" aria-label="Run controls">
     <div class="sub-nav__inner">
-      <span class="sub-nav__title">Deep Playground</span>
+      <span class="sub-nav__title">DeepRoxx</span>
 
       <div class="sub-nav__actions run-controls">
         <span class="epoch" aria-label="Current training epoch">
@@ -89,16 +75,16 @@
          Displayed only on narrow viewports via CSS media query.
     ═══════════════════════════════════════════════════════════ -->
   <div id="mobile-banner" role="note" aria-live="polite">
-    Deep Playground is best experienced on a desktop browser (1024px and wider).
+    DeepRoxx is best experienced on a desktop browser (1024px and wider).
   </div>
 
   <main id="top">
 
     <!-- ══════════════════════════════════════════════════════════
-           Hero Tile (SRS §8, §23.2 · DESIGN.md › product-tile-light)
+           Hero Tile (SRS §8, §23.2 · DESIGN.md › product-tile-light · P13.1)
       ═══════════════════════════════════════════════════════════ -->
     <header class="tile tile--light hero">
-      <p class="hero__eyebrow">Deep Playground</p>
+      <p class="hero__eyebrow">DeepRoxx</p>
       <h1 class="hero__title">Watch a neural network learn.</h1>
       <p class="hero__lead">
         Adjust the data, the features and the layers.<br class="br-desktop" />
@@ -106,7 +92,8 @@
       </p>
       <div class="cta-row">
         <a class="btn btn--primary" href="#playground">Open the playground</a>
-        <a class="btn btn--secondary" href="#how-it-works">Learn more</a>
+        <a class="btn btn--secondary" href="https://github.com/roxxadiiii/deeproxx/blob/main/docs/primer.md"
+          target="_blank" rel="noopener noreferrer">Learn more</a>
       </div>
     </header>
 
@@ -296,6 +283,10 @@
         <!-- ── Column 3: Hidden Layers (SRS §6.1, §23.4, P4.6) ── -->
         <div class="column hidden-layers" aria-label="Hidden layer configuration">
           <h3 class="column-title">Hidden layers</h3>
+          <button id="fullscreen-main" class="btn btn--utility" type="button" aria-pressed="false"
+            title="Show only the playground controls in fullscreen">
+            Fullscreen
+          </button>
 
           <!-- Layer add/remove controls (SRS §15.2, P4.6) -->
           <div class="layer-controls" role="group" aria-label="Layer controls">
@@ -361,40 +352,6 @@
       </div><!-- /#main-part -->
     </section>
 
-    <!-- ══════════════════════════════════════════════════════════
-           How-it-works Tile (DESIGN.md › product-tile-dark)
-      ═══════════════════════════════════════════════════════════ -->
-    <section id="how-it-works" class="tile tile--dark" aria-labelledby="how-title">
-      <h2 id="how-title" class="tile__title">Learning, made visible.</h2>
-      <p class="tile__tagline">Every weight, every neuron, every epoch — rendered live.</p>
-
-      <div class="steps">
-        <div class="step">
-          <p class="step__num">01</p>
-          <h3 class="step__title">Pick your data.</h3>
-          <p class="step__body">Circles, XOR, Gaussian clusters or a spiral. Add noise and choose how much to hold
-            out for testing.</p>
-        </div>
-        <div class="step">
-          <p class="step__num">02</p>
-          <h3 class="step__title">Shape the network.</h3>
-          <p class="step__body">Select input features, then add up to six hidden layers. Blue means positive,
-            orange means negative.</p>
-        </div>
-        <div class="step">
-          <p class="step__num">03</p>
-          <h3 class="step__title">Press play.</h3>
-          <p class="step__body">Watch the loss fall and the decision boundary bend to fit the data, one mini-batch
-            at a time.</p>
-        </div>
-      </div>
-
-      <p class="tile__link">
-        <a class="text-link-on-dark" href="https://github.com/roxxadiiii/deeproxx/blob/main/docs/primer.md"
-          target="_blank" rel="noopener noreferrer">Read the neural network primer ›</a>
-      </p>
-    </section>
-
   </main>
 
   <!-- ══════════════════════════════════════════════════════════
@@ -428,15 +385,27 @@
         <div class="footer__col">
           <h4>Project</h4>
           <ul>
+            <li><a href="#playground">Playground</a></li>
+            <li><a href="https://github.com/roxxadiiii/deeproxx/tree/main/docs" target="_blank"
+                rel="noopener noreferrer">Docs</a></li>
             <li><a href="https://github.com/roxxadiiii/deeproxx" target="_blank" rel="noopener noreferrer"
                 aria-label="View source on GitHub">GitHub</a></li>
             <li><a href="https://playground.tensorflow.org" target="_blank" rel="noopener noreferrer">TensorFlow
                 Playground</a></li>
           </ul>
         </div>
+        <div class="footer__col footer__col--about">
+          <h4>How it works</h4>
+          <p>Every weight, neuron, and epoch updates live.</p>
+          <p>Choose Circles, XOR, Gaussian clusters, or Spiral; adjust noise and the train/test split.</p>
+          <p>Select input features and up to six hidden layers. Blue represents positive values; orange, negative.</p>
+          <p>Training updates one mini-batch at a time; watch the loss curve and decision boundary respond.</p>
+        </div>
       </div>
       <p class="footer__legal">
-        DeepRoxx · Apache 2.0 · Based on TensorFlow Playground.
+        DeepRoxx · Apache 2.0 · Based on TensorFlow Playground · ASCII Sharks by
+        <a href="https://github.com/stackedlol/ascii-sharks" target="_blank" rel="noopener noreferrer">stackedlol</a>
+        (MIT).
       </p>
     </div>
   </footer>

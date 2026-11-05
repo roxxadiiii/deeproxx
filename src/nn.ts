@@ -34,6 +34,7 @@ export interface ErrorFunction {
  * `output` computes R(w); `der` computes R'(w).
  * SRS §3.5, P1.1
  */
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export interface RegularizationFunction {
   output(w: number): number;
   der(w: number): number;
@@ -123,6 +124,7 @@ export class Errors {
  * Built-in regularization penalty functions.
  * SRS §3.5, P1.7–P1.8
  */
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export class RegularizationFunction {
   /**
    * L1 Lasso: R(w) = |w|, R'(w) = sign(w)
@@ -492,9 +494,7 @@ export function updateWeights(
           const avgGrad = link.accErrorDer / link.numAccumulatedDers;
           // Compute regularization derivative
           const regulDer =
-            regularizationRate > 0
-              ? link.regularization.der(link.weight)
-              : 0;
+            regularizationRate > 0 ? link.regularization.der(link.weight) : 0;
 
           const oldWeight = link.weight;
           const newWeight =

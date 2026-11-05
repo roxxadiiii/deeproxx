@@ -9,7 +9,8 @@
     "dev": "webpack serve --mode development",
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint src/**/*.ts --fix",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "test": "tsc --target es2020 --module commonjs --outDir dist/test test/verify.ts && node dist/test/test/verify.js && rm -rf dist/test"
   },
   "keywords": [
     "neural-network",

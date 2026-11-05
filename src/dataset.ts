@@ -49,14 +49,14 @@ export function normalRandom(mean: number = 0, variance: number = 1): number {
     v2 = 2 * Math.random() - 1;
     s = v1 * v1 + v2 * v2;
   } while (s >= 1 || s === 0);
-  const result = Math.sqrt(-2 * Math.log(s) / s) * v1;
+  const result = Math.sqrt((-2 * Math.log(s)) / s) * v1;
   return mean + Math.sqrt(variance) * result;
 }
 
 /**
  * Computes the Euclidean distance from the origin (0, 0).
  */
-function dist(x: number, y: number): number {
+export function dist(x: number, y: number): number {
   return Math.sqrt(x * x + y * y);
 }
 
@@ -112,17 +112,14 @@ export function splitData(
  * Generates the Circle dataset.
  * SRS §4.3.1, P2.3
  */
-export function classifyCircleData(
-  numSamples: number,
-  noise: number,
-): Example2D[] {
+export function classifyCircleData(numSamples: number, noise: number): Example2D[] {
   const points: Example2D[] = [];
   const radius = 5;
   const numShapes = numSamples / 2;
 
   // Generate positive points inside r < 2.5
   for (let i = 0; i < numShapes; i++) {
-    const r = (Math.random() * radius * 0.5);
+    const r = Math.random() * radius * 0.5;
     const angle = Math.random() * 2 * Math.PI;
     const noiseX = (Math.random() - 0.5) * scaleNoise(noise, 0, 2);
     const noiseY = (Math.random() - 0.5) * scaleNoise(noise, 0, 2);
@@ -133,7 +130,7 @@ export function classifyCircleData(
 
   // Generate negative points in outer ring (3.5 < r < 5.0)
   for (let i = 0; i < numShapes; i++) {
-    const r = (Math.random() * radius * 0.3) + radius * 0.7;
+    const r = Math.random() * radius * 0.3 + radius * 0.7;
     const angle = Math.random() * 2 * Math.PI;
     const noiseX = (Math.random() - 0.5) * scaleNoise(noise, 0, 2);
     const noiseY = (Math.random() - 0.5) * scaleNoise(noise, 0, 2);
@@ -149,10 +146,7 @@ export function classifyCircleData(
  * Generates the XOR dataset.
  * SRS §4.3.1, P2.4
  */
-export function classifyXORData(
-  numSamples: number,
-  noise: number,
-): Example2D[] {
+export function classifyXORData(numSamples: number, noise: number): Example2D[] {
   const points: Example2D[] = [];
   const padding = 0.3;
 
@@ -180,10 +174,7 @@ export function classifyXORData(
  * Generates the Two Gaussian (Two Clusters) dataset.
  * SRS §4.3.1, P2.5
  */
-export function classifyTwoGaussData(
-  numSamples: number,
-  noise: number,
-): Example2D[] {
+export function classifyTwoGaussData(numSamples: number, noise: number): Example2D[] {
   const points: Example2D[] = [];
   const variance = scaleNoise(noise, 0.5, 4.0);
 
@@ -206,10 +197,7 @@ export function classifyTwoGaussData(
  * Generates the Spiral dataset.
  * SRS §4.3.1, P2.6
  */
-export function classifySpiralData(
-  numSamples: number,
-  noise: number,
-): Example2D[] {
+export function classifySpiralData(numSamples: number, noise: number): Example2D[] {
   const points: Example2D[] = [];
   const n = numSamples / 2;
 
@@ -246,10 +234,7 @@ export function classifySpiralData(
  * Generates the Regression Plane dataset.
  * SRS §4.3.2, P2.7
  */
-export function regressPlane(
-  numSamples: number,
-  noise: number,
-): Example2D[] {
+export function regressPlane(numSamples: number, noise: number): Example2D[] {
   const points: Example2D[] = [];
 
   for (let i = 0; i < numSamples; i++) {
@@ -270,10 +255,7 @@ export function regressPlane(
  * Generates the Regression Gaussian dataset.
  * SRS §4.3.2, §39.4, P2.8
  */
-export function regressGaussian(
-  numSamples: number,
-  noise: number,
-): Example2D[] {
+export function regressGaussian(numSamples: number, noise: number): Example2D[] {
   const points: Example2D[] = [];
   const centers = [
     { cx: -2, cy: 2, amp: 1.0 },
@@ -285,10 +267,10 @@ export function regressGaussian(
   ];
 
   for (let i = 0; i < numSamples; i++) {
-    let x = Math.random() * 12 - 6;
-    let y = Math.random() * 12 - 6;
+    const x = Math.random() * 12 - 6;
+    const y = Math.random() * 12 - 6;
     const noiseVal = (Math.random() - 0.5) * scaleNoise(noise, 0, 1);
-    
+
     let maxVal = -Infinity;
     for (const c of centers) {
       const d2 = Math.pow(x - c.cx, 2) + Math.pow(y - c.cy, 2);
@@ -303,4 +285,3 @@ export function regressGaussian(
 
   return points;
 }
-

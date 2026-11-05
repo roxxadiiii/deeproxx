@@ -105,7 +105,12 @@ export class HeatMap {
 
         const colorStr = COLOR_SCALE(pred);
         this.ctx.fillStyle = colorStr;
-        this.ctx.fillRect(i * cellWidth, j * cellHeight, cellWidth + 0.5, cellHeight + 0.5);
+        this.ctx.fillRect(
+          i * cellWidth,
+          j * cellHeight,
+          cellWidth + 0.5,
+          cellHeight + 0.5,
+        );
       }
     }
 
