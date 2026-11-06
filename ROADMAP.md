@@ -5,7 +5,7 @@
 > **Source of Truth:** `SRS.md` v4.0 (59 sections, ~1500+ lines)
 > **Generated With:** `roadmap-generator` skill (Enterprise Workflows)
 > **Coverage Guarantee:** Every SRS section §1–§59 is mapped to ≥1 task
-> **Total Phases:** 14 | **Total Tasks:** 368 | **Estimated Duration:** 20–24 weeks (solo, part-time)
+> **Total Phases:** 15 | **Total Tasks:** 369 | **Estimated Duration:** 20–24 weeks (solo, part-time)
 
 ---
 
@@ -179,8 +179,8 @@ Every SRS section is mapped to at least one roadmap task below. **Zero gaps.**
 | 9 | Educational Artifacts | Labs, answer keys, glossary | 1 week | 🟡 |
 | 10 | QA & Verification | Numeric assertions, edge cases | 2 weeks | 🔴 |
 | 11 | Security & A11y | CSP, keyboard, colorblind, browsers | 1 week | 🟡 |
-| 12 | Deployment & Docs | GH Pages, Netlify, README | 1 week | 🟢 |
-| 13 | Visual Polish | Subtle animated ASCII shark hero background | 1–2 days | 🟢 |
+| 12 | Deployment & Docs | GitHub Pages, Netlify, project documentation | 1 week | 🟢 |
+| 13 | Visual Polish | Site-wide ASCII shark background and readable playground panels | 1–2 days | 🟢 |
 | 14 | Golden-Ratio Visual System | Apply φ proportions to the UI and all playground visuals | 1 week | 🟡 |
 
 ---
@@ -622,19 +622,19 @@ Every SRS section is mapped to at least one roadmap task below. **Zero gaps.**
 | P12.1 | Run `npm run build` — verify `dist/` contains `bundle.js`, `index.html`, `bundle.css` | ✅ | P10.52 | §11.1 |
 | P12.2 | Add `robots.txt` and `sitemap.xml` | ✅ | P12.1 | — |
 | P12.3 | Create `CHANGELOG.md` for v1.0.0 (reference SRS §37) | ✅ | P12.1 | §37 |
-| P12.4 | Create `.github/workflows/deploy.yml` for GitHub Pages | ✅ | P12.1 | §11.3 |
-| P12.5 | Push to `main` — verify GH Actions builds + deploys to `gh-pages` | ✅ | P12.4 | §11.3 |
+| P12.4 | Configure `.github/workflows/deploy.yml` to build and deploy a GitHub Pages artifact with least-privilege permissions | ✅ | P12.1 | §11.3 |
+| P12.5 | Push the current workflow to `main` and verify its GitHub Actions Pages deployment | 🔄 | P12.4 | §11.3 |
 | P12.6 | Set up Netlify (Git continuous deploy) | ✅ | P12.1 | §11.2 |
 | P12.7 | Configure Netlify: build = `npm run build`, publish = `dist` | ✅ | P12.6 | §11.2 |
 | P12.8 | Add `_headers` file with CSP (from P11.12) | ✅ | P12.7 | §57.3 |
-| P12.9 | Verify live site loads in < 3 seconds cold cache | ✅ | P12.5, P12.7 | §9 |
+| P12.9 | Verify the latest GitHub Pages deployment loads in < 3 seconds cold cache | 🔄 | P12.5, P12.7 | §9 |
 | P12.10 | Write "Adding Custom Dataset" guide (3 steps from §24) | ✅ | P9.24 | §24 |
 | P12.11 | Add glossary link to README and in-app help | ✅ | P9.28 | §33 |
 | P12.12 | Create "Future Enhancements" backlog issue on GitHub (from §36) | ✅ | P9.29 | §36 |
-| P12.13 | Embed troubleshooting decision tree in README | ✅ | P9.21 | §47.5 |
+| P12.13 | Link the troubleshooting guide from README | ✅ | P9.21 | §47.5 |
 | P12.14 | Write API reference (from §58) as `docs/api.md` | ✅ | P12.1 | §58 |
-| P12.15 | Write `README.md`: description, screenshot, live link, quick start | ✅ | P12.9 | — |
-| P12.16 | Add demo GIF (2 min) showing Circle → XOR → Spiral training | ✅ | P12.15 | — |
+| P12.15 | Write a minimal `README.md` with the live link, setup, checks, documentation, and deployment instructions | ✅ | P12.1 | — |
+| P12.16 | Add demo GIF (2 min) showing Circle → XOR → Spiral training | ⬜ | P12.15 | — |
 | P12.17 | Add footer with links to GitHub repo + SRS doc | ✅ | P12.15 | — |
 | P12.18 | Write `CONTRIBUTING.md` with 3-step dataset guide | ✅ | P12.10 | §24 |
 | P12.19 | Write `ARCHITECTURE.md` with §59 mental model diagram | ✅ | P12.15 | §59 |
@@ -642,20 +642,21 @@ Every SRS section is mapped to at least one roadmap task below. **Zero gaps.**
 | P12.21 | Tag v1.0.0 release on GitHub | ✅ | P12.5 | — |
 | P12.22 | Launch: post to Hacker News, r/MachineLearning (optional) | ✅ | P12.21 | — |
 
-**Exit criteria:** Live URL; README complete; GH Actions auto-deploy; v1.0.0 tagged.
+**Exit criteria:** Live URL; README complete; GH Actions auto-deploy verified; v1.0.0 tagged. The updated Pages workflow still needs a push and deployment check (P12.5, P12.9).
 
 ---
 
 ## 🦈 Phase 13 — Visual Polish
 
-**Goal:** Add a subtle, accessible ASCII shark animation behind the hero without competing with the playground visualization.
+**Goal:** Add an accessible ASCII shark animation site-wide and keep it visible behind a transparent playground section with frosted control panels.
 **Duration:** 1–2 days | **Reference:** [stackedlol/ascii-sharks](https://github.com/stackedlol/ascii-sharks) (MIT)
 
 | ID | Task | Status | Depends | Reference |
 | :--- | :--- | :--- | :--- | :--- |
 | P13.1 | Vendor the MIT-licensed canvas engine and integrate several high-contrast sharks as a fixed site-wide background with attribution, reduced-motion handling, and a graceful feature fallback | ✅ | P12.1 | — |
+| P13.2 | Make the playground section transparent and apply translucent, blurred surfaces to its control and visualization panels so the background remains visible | ✅ | P13.1 | `styles.css` |
 
-**Exit criteria:** Several visible sharks animate behind the full site, pause when off-screen, respect reduced motion, and do not interfere with page controls or the playground.
+**Exit criteria:** Sharks animate behind the site, pause when off-screen, respect reduced motion, and remain visible behind readable, frosted playground panels without interfering with controls.
 
 ---
 

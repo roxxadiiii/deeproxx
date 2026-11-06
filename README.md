@@ -1,94 +1,60 @@
 # DeepRoxx
 
-> Interactive Neural Network Visualization — built from SRS v4.0
+DeepRoxx is an interactive neural network playground. Adjust datasets, features, and network layers, then watch the model learn through live visualizations of its network and decision boundary.
 
-An interactive, browser-based neural network simulator. No server required.
-Adjust hyperparameters, datasets, and architectures in real time to visualize how weights, biases, and decision boundaries evolve during training.
+[Open the live playground](https://roxxadiiii.github.io/deeproxx/) · [View the source](https://github.com/roxxadiiii/deeproxx)
 
----
+## Features
 
-## 🚀 Quick Start
+- Explore 14 classification datasets and 2 regression datasets.
+- Configure model features, layers, activations, and training settings.
+- Visualize network weights, decision boundaries, and training loss as learning progresses.
+- Share configurations through the URL.
+
+## Run locally
+
+Requires Node.js and npm.
 
 ```bash
-npm install
-npm run dev        # http://localhost:8080
-npm run build      # → dist/
-npm test           # Run 42-assertion mathematical and dataset verification suite
+npm ci
+npm run dev
 ```
 
----
+The development server is available at `http://localhost:8080`.
 
-## 🛠️ Development Scripts
+## Checks and build
 
-| Command | Description |
-|---|---|
-| `npm run dev` | Start webpack dev server with hot module reloading |
-| `npm run build` | Compile optimized production bundles to `dist/` |
-| `npm test` | Run core mathematical verification test suite |
-| `npm run lint` | ESLint TypeScript static analysis |
-| `npm run lint:fix` | Automatically fix ESLint and Prettier formatting |
-| `npm run type-check` | TypeScript compiler type checking without emitting files |
-
----
-
-## 📁 Project Structure
-
-```
-deeproxx/
-├── src/
-│   ├── nn.ts           ← Mathematical core (nodes, links, backprop, SGD)
-│   ├── dataset.ts      ← 14 classification and 2 regression data generators
-│   ├── state.ts        ← URL hash serialization & global configuration registry
-│   ├── playground.ts   ← Main orchestrator (events, training loop, D3 SVG)
-│   ├── heatmap.ts      ← Canvas decision boundary renderer (30×30 grid)
-│   ├── linechart.ts    ← Real-time scrolling D3 loss curve chart
-│   └── seedrandom.d.ts ← TypeScript typings for deterministic PRNG
-├── test/
-│   └── verify.ts       ← 42-assertion mathematical, gradient, and dataset suite
-├── docs/
-│   ├── primer.md       ← Beginner ML Primer from first principles
-│   ├── labs/           ← 5 Classroom Student Worksheets & Teacher Answer Keys
-│   ├── faq.md          ← General & Technical FAQ
-│   ├── troubleshooting.md ← Decision tree & 6 common troubleshooting scenarios
-│   ├── custom-dataset.md  ← 3-step guide for adding custom 2D datasets
-│   ├── glossary.md     ← 60+ machine learning terms defined
-│   └── api.md          ← Consolidated exported API reference
-├── ARCHITECTURE.md     ← Architecture breakdown & SRS §59 mental model diagram
-├── CONTRIBUTING.md     ← Contribution guidelines
-├── CHANGELOG.md        ← Release notes
-├── index.html          ← 4-column layout (Data | Features | Layers | Output)
-├── styles.css          ← Design system (frosted glass pill nav, tokens)
-├── package.json
-├── tsconfig.json
-└── webpack.config.js
+```bash
+npm test
+npm run type-check
+npm run build
 ```
 
----
+The production site is written to `dist/`.
 
-## 🏛️ Architecture & Theory
+## Documentation
 
-See [`ARCHITECTURE.md`](file:///home/roxxy/dev/deeproxx/ARCHITECTURE.md) for the complete mental model diagram, state machine, and data flow specification.
+- [Machine learning primer](docs/primer.md)
+- [Classroom labs](docs/labs/)
+- [FAQ](docs/faq.md)
+- [Troubleshooting](docs/troubleshooting.md)
+- [Glossary](docs/glossary.md)
+- [Custom dataset guide](docs/custom-dataset.md)
+- [API reference](docs/api.md)
+- [Architecture](ARCHITECTURE.md)
+- [Contributing](CONTRIBUTING.md)
 
----
+## Deployment
 
-## 📚 Educational Resources & Labs
+GitHub Pages deploys `dist/` through [the Actions workflow](.github/workflows/deploy.yml) when changes are pushed to `main`. The Pages source must be set to **GitHub Actions**.
 
-- **[ML Primer](file:///home/roxxy/dev/deeproxx/docs/primer.md)**: Introduction to neurons, weights, biases, and loss.
-- **[Classroom Labs](file:///home/roxxy/dev/deeproxx/docs/labs/)**: 5 worksheets with teacher answer keys and grading rubrics.
-- **[Troubleshooting Guide](file:///home/roxxy/dev/deeproxx/docs/troubleshooting.md)**: Flowchart decision tree and diagnosis guide.
-- **[Glossary](file:///home/roxxy/dev/deeproxx/docs/glossary.md)**: 60+ neural network and machine learning terms.
-- **[Custom Dataset Guide](file:///home/roxxy/dev/deeproxx/docs/custom-dataset.md)**: Step-by-step dataset extension guide.
-- **[API Reference](file:///home/roxxy/dev/deeproxx/docs/api.md)**: Full function signatures and exported module catalog.
+For Netlify, use `npm run build` as the build command and `dist` as the publish directory.
 
----
+## Credits
 
-## 🌐 Deployment
+- ASCII shark background engine: [ascii-sharks](https://github.com/stackedlol/ascii-sharks), used under the MIT License.
+- Neural network playground inspiration: [TensorFlow Playground](https://playground.tensorflow.org/).
 
-- **GitHub Pages**: Pushes to `main` build and deploy `dist/` via `.github/workflows/deploy.yml` to [the site URL](https://roxxadiiii.github.io/deeproxx/). Pages is configured to use **GitHub Actions**.
-- **Netlify**: Continuous deployment: build command `npm run build`, publish directory `dist`.
+## License
 
----
-
-## 📄 License
-
-Apache 2.0 — see [`LICENSE`](file:///home/roxxy/dev/deeproxx/LICENSE).
+[Apache License 2.0](LICENSE)
