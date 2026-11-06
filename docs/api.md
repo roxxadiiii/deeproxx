@@ -35,6 +35,16 @@
 | `classifyXORData` | Function | `(numSamples: number, noise: number) => Example2D[]` | Generates 4-quadrant XOR classification data. |
 | `classifyTwoGaussData` | Function | `(numSamples: number, noise: number) => Example2D[]` | Generates two-cluster Gaussian classification data. |
 | `classifySpiralData` | Function | `(numSamples: number, noise: number) => Example2D[]` | Generates two interlocking Archimedean spiral arms. |
+| `classifyMoonsData` | Function | `(numSamples: number, noise: number) => Example2D[]` | Generates two interleaving half-moon classes. |
+| `classifyCheckerboardData` | Function | `(numSamples: number, noise: number) => Example2D[]` | Generates alternating square cells in a checkerboard pattern. |
+| `classifyFourGaussData` | Function | `(numSamples: number, noise: number) => Example2D[]` | Generates four Gaussian clusters with alternating diagonal labels. |
+| `classifySixClustersData` | Function | `(numSamples: number, noise: number) => Example2D[]` | Generates six Gaussian clusters arranged around the origin. |
+| `classifyVerticalStripesData` | Function | `(numSamples: number, noise: number) => Example2D[]` | Generates vertical alternating bands. |
+| `classifyHorizontalStripesData` | Function | `(numSamples: number, noise: number) => Example2D[]` | Generates horizontal alternating bands. |
+| `classifyDiagonalStripesData` | Function | `(numSamples: number, noise: number) => Example2D[]` | Generates alternating diagonal bands. |
+| `classifySineWaveData` | Function | `(numSamples: number, noise: number) => Example2D[]` | Generates points separated by a sinusoidal decision boundary. |
+| `classifyParabolaData` | Function | `(numSamples: number, noise: number) => Example2D[]` | Generates points separated by a parabolic decision boundary. |
+| `classifyRadialSectorsData` | Function | `(numSamples: number, noise: number) => Example2D[]` | Generates alternating positive and negative angular sectors. |
 | `regressPlane` | Function | `(numSamples: number, noise: number) => Example2D[]` | Generates continuous planar regression data ($z = \frac{x+y}{12}$). |
 | `regressGaussian` | Function | `(numSamples: number, noise: number) => Example2D[]` | Generates multi-peaked continuous RBF regression data. |
 
@@ -49,7 +59,7 @@
 | `Type` | Enum | `STRING`, `NUMBER`, `ARRAY_NUMBER`, `ARRAY_STRING`, `BOOLEAN`, `OBJECT` | Serialization type descriptors. |
 | `activations` | Object | `{ relu, tanh, sigmoid, linear }` | Key-to-object map for activation functions. |
 | `regularizations` | Object | `{ none, L1, L2 }` | Key-to-object map for regularization functions. |
-| `datasets` | Object | `{ circle, xor, gauss, spiral }` | Key-to-function map for classification data generators. |
+| `datasets` | Object | `{ circle, xor, gauss, spiral, moons, checkerboard, ... }` | Key-to-function map for 14 classification data generators. |
 | `regDatasets` | Object | `{ 'reg-plane', 'reg-gauss' }` | Key-to-function map for regression data generators. |
 | `State.deserializeState` | Static Method | `() => State` | Parses `window.location.hash` and reconstructs configured state. |
 | `State.prototype.serialize` | Method | `() => string` | Encodes current state properties into a URI hash string and updates browser location. |
@@ -65,4 +75,3 @@
 | `AppendingLineChart` | `linechart.ts` | `constructor(container, _xLabel?, _yLabel?)` | D3 SVG line chart managing real-time auto-scaling loss history curves. |
 | `addDataPoint` | `linechart.ts` | `(values: [number, number]) => void` | Appends training and testing loss values and triggers SVG path redraw. |
 | `reset` | `linechart.ts` | `() => void` | Clears historical loss arrays and resets coordinate scales. |
-

@@ -13,7 +13,7 @@ Adjust hyperparameters, datasets, and architectures in real time to visualize ho
 npm install
 npm run dev        # http://localhost:8080
 npm run build      # → dist/
-npm test           # Run 30-assertion mathematical verification suite
+npm test           # Run 42-assertion mathematical and dataset verification suite
 ```
 
 ---
@@ -37,14 +37,14 @@ npm test           # Run 30-assertion mathematical verification suite
 deeproxx/
 ├── src/
 │   ├── nn.ts           ← Mathematical core (nodes, links, backprop, SGD)
-│   ├── dataset.ts      ← Synthetic data generators (circle, XOR, gauss, spiral, regression)
+│   ├── dataset.ts      ← 14 classification and 2 regression data generators
 │   ├── state.ts        ← URL hash serialization & global configuration registry
 │   ├── playground.ts   ← Main orchestrator (events, training loop, D3 SVG)
 │   ├── heatmap.ts      ← Canvas decision boundary renderer (30×30 grid)
 │   ├── linechart.ts    ← Real-time scrolling D3 loss curve chart
 │   └── seedrandom.d.ts ← TypeScript typings for deterministic PRNG
 ├── test/
-│   └── verify.ts       ← 30-assertion mathematical & gradient verification suite
+│   └── verify.ts       ← 42-assertion mathematical, gradient, and dataset suite
 ├── docs/
 │   ├── primer.md       ← Beginner ML Primer from first principles
 │   ├── labs/           ← 5 Classroom Student Worksheets & Teacher Answer Keys
@@ -84,7 +84,7 @@ See [`ARCHITECTURE.md`](file:///home/roxxy/dev/deeproxx/ARCHITECTURE.md) for the
 
 ## 🌐 Deployment
 
-- **GitHub Pages**: Automated continuous deployment via `.github/workflows/deploy.yml`.
+- **GitHub Pages**: Pushes to `main` build and deploy `dist/` via `.github/workflows/deploy.yml` to [the site URL](https://roxxadiiii.github.io/deeproxx/). Pages is configured to use **GitHub Actions**.
 - **Netlify**: Continuous deployment: build command `npm run build`, publish directory `dist`.
 
 ---

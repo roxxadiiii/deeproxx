@@ -226,6 +226,193 @@ export function classifySpiralData(numSamples: number, noise: number): Example2D
   return points;
 }
 
+/**
+ * Generates two interleaving half-moon classes.
+ */
+export function classifyMoonsData(numSamples: number, noise: number): Example2D[] {
+  const points: Example2D[] = [];
+  for (let i = 0; i < numSamples; i++) {
+    const label = i < Math.ceil(numSamples / 2) ? 1 : -1;
+    const angle = Math.random() * Math.PI;
+    const direction = label === 1 ? 1 : -1;
+    const offset = label === 1 ? -1.2 : 1.2;
+    const x = 2.2 * Math.cos(angle) + offset;
+    const y = direction * 2.2 * Math.sin(angle) + (label === 1 ? 0.4 : -0.4);
+    points.push({
+      x: x + (Math.random() - 0.5) * scaleNoise(noise, 0, 2),
+      y: y + (Math.random() - 0.5) * scaleNoise(noise, 0, 2),
+      label,
+    });
+  }
+  return points;
+}
+
+/**
+ * Generates alternating square cells in a checkerboard pattern.
+ */
+export function classifyCheckerboardData(numSamples: number, noise: number): Example2D[] {
+  const points: Example2D[] = [];
+  for (let i = 0; i < numSamples; i++) {
+    const x = Math.random() * 10 - 5 + (Math.random() - 0.5) * scaleNoise(noise, 0, 2);
+    const y = Math.random() * 10 - 5 + (Math.random() - 0.5) * scaleNoise(noise, 0, 2);
+    const cellX = Math.floor((x + 5) / 2);
+    const cellY = Math.floor((y + 5) / 2);
+    points.push({ x, y, label: (cellX + cellY) % 2 === 0 ? 1 : -1 });
+  }
+  return points;
+}
+
+/**
+ * Generates four Gaussian clusters with alternating diagonal labels.
+ */
+export function classifyFourGaussData(numSamples: number, noise: number): Example2D[] {
+  const points: Example2D[] = [];
+  const centers = [
+    { x: -2.5, y: -2.5, label: 1 },
+    { x: -2.5, y: 2.5, label: -1 },
+    { x: 2.5, y: -2.5, label: -1 },
+    { x: 2.5, y: 2.5, label: 1 },
+  ];
+  const variance = scaleNoise(noise, 0.45, 1.8);
+  for (let i = 0; i < numSamples; i++) {
+    const center = centers[i % centers.length];
+    points.push({
+      x: normalRandom(center.x, variance),
+      y: normalRandom(center.y, variance),
+      label: center.label,
+    });
+  }
+  return points;
+}
+
+/**
+ * Generates six Gaussian clusters arranged around the origin.
+ */
+export function classifySixClustersData(numSamples: number, noise: number): Example2D[] {
+  const points: Example2D[] = [];
+  const centers = [
+    { x: -4, y: -2, label: 1 },
+    { x: -4, y: 2, label: -1 },
+    { x: 0, y: -3, label: -1 },
+    { x: 0, y: 3, label: 1 },
+    { x: 4, y: -2, label: 1 },
+    { x: 4, y: 2, label: -1 },
+  ];
+  const variance = scaleNoise(noise, 0.25, 1.5);
+  for (let i = 0; i < numSamples; i++) {
+    const center = centers[i % centers.length];
+    points.push({
+      x: normalRandom(center.x, variance),
+      y: normalRandom(center.y, variance),
+      label: center.label,
+    });
+  }
+  return points;
+}
+
+/**
+ * Generates vertical alternating bands.
+ */
+export function classifyVerticalStripesData(
+  numSamples: number,
+  noise: number,
+): Example2D[] {
+  const points: Example2D[] = [];
+  for (let i = 0; i < numSamples; i++) {
+    const x = Math.random() * 10 - 5 + (Math.random() - 0.5) * scaleNoise(noise, 0, 2);
+    const y = Math.random() * 10 - 5 + (Math.random() - 0.5) * scaleNoise(noise, 0, 2);
+    points.push({ x, y, label: Math.floor((x + 5) / 2) % 2 === 0 ? 1 : -1 });
+  }
+  return points;
+}
+
+/**
+ * Generates horizontal alternating bands.
+ */
+export function classifyHorizontalStripesData(
+  numSamples: number,
+  noise: number,
+): Example2D[] {
+  const points: Example2D[] = [];
+  for (let i = 0; i < numSamples; i++) {
+    const x = Math.random() * 10 - 5 + (Math.random() - 0.5) * scaleNoise(noise, 0, 2);
+    const y = Math.random() * 10 - 5 + (Math.random() - 0.5) * scaleNoise(noise, 0, 2);
+    points.push({ x, y, label: Math.floor((y + 5) / 2) % 2 === 0 ? 1 : -1 });
+  }
+  return points;
+}
+
+/**
+ * Generates alternating diagonal bands.
+ */
+export function classifyDiagonalStripesData(
+  numSamples: number,
+  noise: number,
+): Example2D[] {
+  const points: Example2D[] = [];
+  for (let i = 0; i < numSamples; i++) {
+    const x = Math.random() * 10 - 5 + (Math.random() - 0.5) * scaleNoise(noise, 0, 2);
+    const y = Math.random() * 10 - 5 + (Math.random() - 0.5) * scaleNoise(noise, 0, 2);
+    const band = Math.floor((x + y + 10) / 3);
+    points.push({ x, y, label: band % 2 === 0 ? 1 : -1 });
+  }
+  return points;
+}
+
+/**
+ * Generates points separated by a sinusoidal decision boundary.
+ */
+export function classifySineWaveData(numSamples: number, noise: number): Example2D[] {
+  const points: Example2D[] = [];
+  for (let i = 0; i < numSamples; i++) {
+    const x = Math.random() * 10 - 5;
+    const y = Math.random() * 10 - 5;
+    const noisyX = x + (Math.random() - 0.5) * scaleNoise(noise, 0, 2);
+    const noisyY = y + (Math.random() - 0.5) * scaleNoise(noise, 0, 2);
+    const label = noisyY >= 2 * Math.sin(noisyX * 0.9) ? 1 : -1;
+    points.push({ x: noisyX, y: noisyY, label });
+  }
+  return points;
+}
+
+/**
+ * Generates points separated by a parabolic decision boundary.
+ */
+export function classifyParabolaData(numSamples: number, noise: number): Example2D[] {
+  const points: Example2D[] = [];
+  for (let i = 0; i < numSamples; i++) {
+    const x = Math.random() * 10 - 5;
+    const y = Math.random() * 10 - 5;
+    const noisyX = x + (Math.random() - 0.5) * scaleNoise(noise, 0, 2);
+    const noisyY = y + (Math.random() - 0.5) * scaleNoise(noise, 0, 2);
+    const label = noisyY >= 0.2 * noisyX * noisyX - 2 ? 1 : -1;
+    points.push({ x: noisyX, y: noisyY, label });
+  }
+  return points;
+}
+
+/**
+ * Generates alternating positive and negative angular sectors.
+ */
+export function classifyRadialSectorsData(
+  numSamples: number,
+  noise: number,
+): Example2D[] {
+  const points: Example2D[] = [];
+  const sectors = 8;
+  for (let i = 0; i < numSamples; i++) {
+    const radius = Math.random() * 5;
+    const angle = Math.random() * 2 * Math.PI;
+    const x = radius * Math.cos(angle) + (Math.random() - 0.5) * scaleNoise(noise, 0, 2);
+    const y = radius * Math.sin(angle) + (Math.random() - 0.5) * scaleNoise(noise, 0, 2);
+    const sector = Math.floor(
+      ((angle + 2 * Math.PI) % (2 * Math.PI)) / ((2 * Math.PI) / sectors),
+    );
+    points.push({ x, y, label: sector % 2 === 0 ? 1 : -1 });
+  }
+  return points;
+}
+
 // ─────────────────────────────────────────────────────────────
 // SECTION 4: Regression Generators (SRS §4.3.2, §39.4)
 // ─────────────────────────────────────────────────────────────

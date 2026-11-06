@@ -5,7 +5,7 @@
 > **Source of Truth:** `SRS.md` v4.0 (59 sections, ~1500+ lines)
 > **Generated With:** `roadmap-generator` skill (Enterprise Workflows)
 > **Coverage Guarantee:** Every SRS section §1–§59 is mapped to ≥1 task
-> **Total Phases:** 14 | **Total Tasks:** 367 | **Estimated Duration:** 20–24 weeks (solo, part-time)
+> **Total Phases:** 14 | **Total Tasks:** 368 | **Estimated Duration:** 20–24 weeks (solo, part-time)
 
 ---
 
@@ -169,7 +169,7 @@ Every SRS section is mapped to at least one roadmap task below. **Zero gaps.**
 | :--- | :--- | :--- | :--- | :--- |
 | 0 | Foundation & Setup | Toolchain, repo, build | 3–5 days | 🔴 |
 | 1 | Mathematical Core | Node, Link, forward/backprop | 1.5 weeks | 🔴 |
-| 2 | Dataset Engine | 6 datasets, noise, shuffle | 1 week | 🔴 |
+| 2 | Dataset Engine | 16 datasets (14 classification, 2 regression), noise, shuffle | 1 week | 🔴 |
 | 3 | State & URL | Hash parsing, seeds | 4 days | 🔴 |
 | 4 | UI Shell | 4-column layout, controls | 1 week | 🟡 |
 | 5 | SVG Visualization | Nodes, Bezier links, hover | 1.5 weeks | 🟡 |
@@ -255,7 +255,7 @@ Every SRS section is mapped to at least one roadmap task below. **Zero gaps.**
 
 ## 📊 Phase 2 — Dataset Engine (`src/dataset.ts`)
 
-**Goal:** 6 datasets with noise, shuffle, split.
+**Goal:** 16 datasets (14 classification, 2 regression) with noise, shuffle, and split.
 **Duration:** 1 week | **SRS Ref:** §4.3, §39.4, §45, §47, §48
 
 | ID | Task | Status | Depends | SRS |
@@ -280,8 +280,9 @@ Every SRS section is mapped to at least one roadmap task below. **Zero gaps.**
 | P2.18 | Test: split 10%, 30%, 50%, 70%, 90% all respect the percentage | ✅ | P2.11 | §48.3 |
 | P2.19 | Verify XOR padding: no point has |x|<0.3 or |y|<0.3 | ✅ | P2.4 | §4.3.1 |
 | P2.20 | Verify Circle: no point at distance 2.5 < r < 3.5 | ✅ | P2.3 | §4.3.1 |
+| P2.21 | Add ten from-scratch classification generators, dynamic accessible thumbnails, URL selection, and generator verification | ✅ | P2.12, P3.5 | `src/dataset.ts`, `src/state.ts`, `src/playground.ts`, `test/verify.ts` |
 
-**Exit criteria:** All 6 generators visually correct; shuffle uniform; noise/split/safety verified.
+**Exit criteria:** All 16 generators visually correct; shuffle uniform; noise/split/safety verified.
 
 ---
 
@@ -739,7 +740,7 @@ Every SRS section is mapped to at least one roadmap task below. **Zero gaps.**
 The project is **complete** when:
 
 1. ✅ All 14 phases exit criteria met
-2. ✅ All 367 tasks marked ✅
+2. ✅ All 368 tasks marked ✅
 3. ✅ All 5 SRS labs pass
 4. ✅ All 52 verification assertions pass (P10.1–P10.52)
 5. ✅ All 12 URL params round-trip
@@ -774,7 +775,7 @@ Save as `PROGRESS.md` and update weekly:
 
 ### Coverage Matrix Status
 - SRS §1–§59 mapped: ✅
-- Tasks completed: 307 / 367
+- Tasks completed: 308 / 368
 - Phases completed: 13 / 14
 
 ### Blockers

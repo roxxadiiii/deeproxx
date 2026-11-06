@@ -57,23 +57,18 @@ export const datasets: { [key: string]: dataset.DataGenerator } = {
 
 ---
 
-## Step 3: Add Thumbnail Canvas in `index.html`
+## Step 3: Register the Dataset Display Name
 
-Open [`index.html`](file:///home/roxxy/dev/deeproxx/index.html). In the dataset thumbnail container (`#classify-datasets`), add a canvas with a matching `data-dataset` attribute:
+Register a display name for the dataset key in `datasetLabels` in [`src/state.ts`](file:///home/roxxy/dev/deeproxx/src/state.ts):
 
-```html
-<canvas
-  id="canvas-checkerboard"
-  class="dataset-thumb"
-  data-dataset="checkerboard"
-  width="80"
-  height="80"
-  title="Checkerboard dataset"
-  role="button"
-  tabindex="0"
-  aria-label="Checkerboard dataset">
-</canvas>
+```typescript
+export const datasetLabels = {
+  // Existing names...
+  checkerboard: "Checkerboard",
+};
 ```
+
+The playground creates, labels, and renders the thumbnail automatically from the generator and label maps. Regression datasets use `regDatasets` and `regDatasetLabels`.
 
 ---
 
@@ -83,4 +78,3 @@ Open [`index.html`](file:///home/roxxy/dev/deeproxx/index.html). In the dataset 
 2. Launch `npm run serve-watch` or open `index.html`.
 3. DeepRoxx's `renderThumbnails()` function will automatically render a static preview on your canvas.
 4. Clicking your canvas will select the dataset, update the URL hash (`#dataset=checkerboard`), regenerate points, and reset the simulation.
-

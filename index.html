@@ -160,30 +160,13 @@
           <!-- Dataset Thumbnail Canvases (SRS §44, P2.14, P4.4) -->
           <div id="classify-datasets" class="dataset-thumbnails">
             <p class="thumbnails-label">Choose a dataset.</p>
-            <div class="thumb-grid">
-              <canvas id="canvas-circle" class="dataset-thumb" data-dataset="circle" width="80" height="80"
-                title="Circle dataset" role="button" tabindex="0" aria-label="Circle dataset"></canvas>
-              <canvas id="canvas-xor" class="dataset-thumb" data-dataset="xor" width="80" height="80"
-                title="XOR dataset" role="button" tabindex="0" aria-label="XOR dataset"></canvas>
-              <canvas id="canvas-gauss" class="dataset-thumb" data-dataset="gauss" width="80" height="80"
-                title="Gaussian clusters dataset" role="button" tabindex="0"
-                aria-label="Gaussian clusters dataset"></canvas>
-              <canvas id="canvas-spiral" class="dataset-thumb" data-dataset="spiral" width="80" height="80"
-                title="Spiral dataset" role="button" tabindex="0" aria-label="Spiral dataset"></canvas>
-            </div>
+            <div class="thumb-grid" role="group" aria-label="Classification datasets"></div>
           </div>
 
           <!-- Regression datasets (hidden when problem=classification) -->
           <div id="regress-datasets" class="dataset-thumbnails hidden">
             <p class="thumbnails-label">Choose a dataset.</p>
-            <div class="thumb-grid">
-              <canvas id="canvas-reg-plane" class="dataset-thumb" data-dataset="reg-plane" width="80" height="80"
-                title="Regression plane dataset" role="button" tabindex="0"
-                aria-label="Regression plane dataset"></canvas>
-              <canvas id="canvas-reg-gauss" class="dataset-thumb" data-dataset="reg-gauss" width="80" height="80"
-                title="Regression Gaussian dataset" role="button" tabindex="0"
-                aria-label="Regression Gaussian dataset"></canvas>
-            </div>
+            <div class="thumb-grid" role="group" aria-label="Regression datasets"></div>
           </div>
 
           <!-- Data Parameters (SRS §5, P4.4) -->

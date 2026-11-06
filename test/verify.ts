@@ -1,6 +1,11 @@
 import { Activations, Errors, RegularizationFunction, Node, Link, buildNetwork, forwardProp, backProp, updateWeights } from "../src/nn";
-import { classifyCircleData, classifyXORData, classifySpiralData, splitData } from "../src/dataset";
-import { State } from "../src/state";
+import {
+  classifyCircleData,
+  classifyXORData,
+  classifySpiralData,
+  splitData,
+} from "../src/dataset";
+import { datasets, datasetLabels, State } from "../src/state";
 
 console.log("=== Running Deep Playground Core Verification Suite ===");
 
@@ -146,6 +151,25 @@ assert(xorPts.length === 500, "XOR dataset outputs 500 points");
 const spiralPts = classifySpiralData(500, 0);
 assert(spiralPts.length === 500, "Spiral dataset outputs 500 points");
 
+const existingDatasetKeys = new Set(["circle", "xor", "gauss", "spiral"]);
+const additionalDatasets = Object.entries(datasets).filter(([key]) => !existingDatasetKeys.has(key));
+assert(additionalDatasets.length === 10, "Ten new classification datasets are registered");
+
+for (const [key, generator] of additionalDatasets) {
+  const points = generator(500, 10);
+  const labels = new Set(points.map((point) => point.label));
+  const validPoints = points.every(
+    (point) =>
+      Number.isFinite(point.x) &&
+      Number.isFinite(point.y) &&
+      (point.label === 1 || point.label === -1),
+  );
+  assert(
+    points.length === 500 && validPoints && labels.size === 2 && !!datasetLabels[key],
+    `${datasetLabels[key]} generates 500 finite, binary-labeled points`,
+  );
+}
+
 const split = splitData(circlePts, 70);
 assert(split[0].length === 350 && split[1].length === 150, "70/30 data split accurate");
 
@@ -159,6 +183,8 @@ state.dataset = classifySpiralData;
 state.networkShape = [4, 2];
 const hash = state.serialize();
 assert(typeof hash === "string" && hash.length > 0, `State serializes to string: ${hash.substring(0, 40)}...`);
+state.dataset = datasets.checkerboard;
+assert(state.serialize().includes("dataset=checkerboard"), "New dataset names round-trip through the URL hash");
 
 console.log(`\n=== Verification Results: ${passed} Passed, ${failed} Failed ===`);
 if (failed > 0) {

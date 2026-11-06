@@ -696,6 +696,15 @@ html[data-theme='dark'] .select-pill {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: var(--space-sm);
+  max-height: 300px;
+  overflow-y: auto;
+  align-content: start;
+  padding-right: var(--space-xxs);
+}
+
+.dataset-option {
+  min-width: 0;
+  text-align: center;
 }
 
 .dataset-thumb {
@@ -706,6 +715,17 @@ html[data-theme='dark'] .select-pill {
   border: 2px solid transparent;
   cursor: pointer;
   transition: transform var(--transition-base), border-color var(--transition-base);
+}
+
+.dataset-name {
+  display: block;
+  overflow: hidden;
+  margin-top: var(--space-xxs);
+  color: var(--color-ink-muted-80);
+  font-size: 12px;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* Selected — configurator-option-chip-selected treatment (SRS §44.3, P10.30) */

@@ -13,7 +13,9 @@ import {
   activations,
   regularizations,
   datasets,
+  datasetLabels,
   regDatasets,
+  regDatasetLabels,
 } from './state';
 import { HeatMap, COLOR_SCALE } from './heatmap';
 import { AppendingLineChart } from './linechart';
@@ -405,6 +407,41 @@ function updatePlayButton(): void {
 // ─────────────────────────────────────────────────────────────
 
 function renderThumbnails(): void {
+  const galleries = [
+    { containerId: 'classify-datasets', labels: datasetLabels },
+    { containerId: 'regress-datasets', labels: regDatasetLabels },
+  ];
+
+  for (const gallery of galleries) {
+    const container = document.getElementById(gallery.containerId);
+    const grid = container?.querySelector('.thumb-grid');
+    if (!grid) continue;
+
+    grid.replaceChildren();
+    for (const [key, label] of Object.entries(gallery.labels)) {
+      const option = document.createElement('div');
+      option.className = 'dataset-option';
+
+      const canvas = document.createElement('canvas');
+      canvas.id = `canvas-${key}`;
+      canvas.className = 'dataset-thumb';
+      canvas.dataset.dataset = key;
+      canvas.width = 80;
+      canvas.height = 80;
+      canvas.title = `${label} dataset`;
+      canvas.setAttribute('role', 'button');
+      canvas.tabIndex = 0;
+      canvas.setAttribute('aria-label', `${label} dataset`);
+
+      const name = document.createElement('span');
+      name.className = 'dataset-name';
+      name.textContent = label;
+
+      option.append(canvas, name);
+      grid.appendChild(option);
+    }
+  }
+
   const canvases = document.querySelectorAll<HTMLCanvasElement>('canvas.dataset-thumb');
   canvases.forEach((canvas) => {
     const key = canvas.getAttribute('data-dataset');
@@ -647,6 +684,14 @@ function bindEventListeners(): void {
     generateData();
     resetNetwork();
     state.serialize();
+  });
+
+  d3.selectAll('canvas.dataset-thumb').on('keydown', function (this: HTMLCanvasElement) {
+    const event = d3.event as KeyboardEvent;
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      this.click();
+    }
   });
 
   // Sliders (SRS §15.3, §48, §50)

@@ -71,6 +71,33 @@ export const datasets: { [key: string]: dataset.DataGenerator } = {
   xor: dataset.classifyXORData,
   gauss: dataset.classifyTwoGaussData,
   spiral: dataset.classifySpiralData,
+  moons: dataset.classifyMoonsData,
+  checkerboard: dataset.classifyCheckerboardData,
+  'four-gauss': dataset.classifyFourGaussData,
+  'six-clusters': dataset.classifySixClustersData,
+  'vertical-stripes': dataset.classifyVerticalStripesData,
+  'horizontal-stripes': dataset.classifyHorizontalStripesData,
+  'diagonal-stripes': dataset.classifyDiagonalStripesData,
+  'sine-wave': dataset.classifySineWaveData,
+  parabola: dataset.classifyParabolaData,
+  'radial-sectors': dataset.classifyRadialSectorsData,
+};
+
+export const datasetLabels: { [key: string]: string } = {
+  circle: 'Circle',
+  xor: 'XOR',
+  gauss: 'Gaussian clusters',
+  spiral: 'Spiral',
+  moons: 'Two moons',
+  checkerboard: 'Checkerboard',
+  'four-gauss': 'Four Gaussians',
+  'six-clusters': 'Six clusters',
+  'vertical-stripes': 'Vertical stripes',
+  'horizontal-stripes': 'Horizontal stripes',
+  'diagonal-stripes': 'Diagonal stripes',
+  'sine-wave': 'Sine wave',
+  parabola: 'Parabola',
+  'radial-sectors': 'Radial sectors',
 };
 
 /**
@@ -80,6 +107,11 @@ export const datasets: { [key: string]: dataset.DataGenerator } = {
 export const regDatasets: { [key: string]: dataset.DataGenerator } = {
   'reg-plane': dataset.regressPlane,
   'reg-gauss': dataset.regressGaussian,
+};
+
+export const regDatasetLabels: { [key: string]: string } = {
+  'reg-plane': 'Regression plane',
+  'reg-gauss': 'Regression Gaussian',
 };
 
 // ─────────────────────────────────────────────────────────────
