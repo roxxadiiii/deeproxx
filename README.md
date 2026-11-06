@@ -6,7 +6,7 @@ DeepRoxx is an interactive neural network playground. Adjust datasets, features,
 
 ## Features
 
-- Explore 14 classification datasets and 2 regression datasets.
+- Explore 19 classification datasets and 19 regression datasets.
 - Configure model features, layers, activations, and training settings.
 - Visualize network weights, decision boundaries, and training loss as learning progresses.
 - Share configurations through the URL.

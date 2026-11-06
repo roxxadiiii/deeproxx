@@ -5,7 +5,14 @@ import {
   classifySpiralData,
   splitData,
 } from "../src/dataset";
-import { datasets, datasetLabels, State } from "../src/state";
+import {
+  datasets,
+  datasetLabels,
+  regDatasets,
+  regDatasetLabels,
+  Problem,
+  State,
+} from "../src/state";
 
 console.log("=== Running Deep Playground Core Verification Suite ===");
 
@@ -153,7 +160,8 @@ assert(spiralPts.length === 500, "Spiral dataset outputs 500 points");
 
 const existingDatasetKeys = new Set(["circle", "xor", "gauss", "spiral"]);
 const additionalDatasets = Object.entries(datasets).filter(([key]) => !existingDatasetKeys.has(key));
-assert(additionalDatasets.length === 10, "Ten new classification datasets are registered");
+assert(Object.keys(datasets).length === 19, "Nineteen classification datasets are registered");
+assert(additionalDatasets.length === 15, "Fifteen additional classification datasets are registered");
 
 for (const [key, generator] of additionalDatasets) {
   const points = generator(500, 10);
@@ -167,6 +175,23 @@ for (const [key, generator] of additionalDatasets) {
   assert(
     points.length === 500 && validPoints && labels.size === 2 && !!datasetLabels[key],
     `${datasetLabels[key]} generates 500 finite, binary-labeled points`,
+  );
+}
+
+assert(Object.keys(regDatasets).length === 19, "Nineteen regression datasets are registered");
+for (const [key, generator] of Object.entries(regDatasets)) {
+  const points = generator(500, 10);
+  const validPoints = points.every(
+    (point) =>
+      Number.isFinite(point.x) &&
+      Number.isFinite(point.y) &&
+      Number.isFinite(point.label) &&
+      point.label >= -1 &&
+      point.label <= 1,
+  );
+  assert(
+    points.length === 500 && validPoints && !!regDatasetLabels[key],
+    `${regDatasetLabels[key]} generates 500 finite points with bounded targets`,
   );
 }
 
@@ -185,6 +210,9 @@ const hash = state.serialize();
 assert(typeof hash === "string" && hash.length > 0, `State serializes to string: ${hash.substring(0, 40)}...`);
 state.dataset = datasets.checkerboard;
 assert(state.serialize().includes("dataset=checkerboard"), "New dataset names round-trip through the URL hash");
+state.problem = Problem.REGRESSION;
+state.regDataset = regDatasets["reg-ripple"];
+assert(state.serialize().includes("regDataset=reg-ripple"), "New regression dataset names round-trip through the URL hash");
 
 console.log(`\n=== Verification Results: ${passed} Passed, ${failed} Failed ===`);
 if (failed > 0) {

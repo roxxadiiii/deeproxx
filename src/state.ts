@@ -81,6 +81,11 @@ export const datasets: { [key: string]: dataset.DataGenerator } = {
   'sine-wave': dataset.classifySineWaveData,
   parabola: dataset.classifyParabolaData,
   'radial-sectors': dataset.classifyRadialSectorsData,
+  'concentric-rings': dataset.classifyConcentricRingsData,
+  pinwheel: dataset.classifyPinwheelData,
+  cross: dataset.classifyCrossData,
+  'wave-grid': dataset.classifyWaveGridData,
+  diamond: dataset.classifyDiamondData,
 };
 
 export const datasetLabels: { [key: string]: string } = {
@@ -98,6 +103,11 @@ export const datasetLabels: { [key: string]: string } = {
   'sine-wave': 'Sine wave',
   parabola: 'Parabola',
   'radial-sectors': 'Radial sectors',
+  'concentric-rings': 'Concentric rings',
+  pinwheel: 'Pinwheel',
+  cross: 'Cross',
+  'wave-grid': 'Wave grid',
+  diamond: 'Diamond',
 };
 
 /**
@@ -107,11 +117,45 @@ export const datasetLabels: { [key: string]: string } = {
 export const regDatasets: { [key: string]: dataset.DataGenerator } = {
   'reg-plane': dataset.regressPlane,
   'reg-gauss': dataset.regressGaussian,
+  'reg-sine-surface': dataset.regressSineSurface,
+  'reg-saddle': dataset.regressSaddle,
+  'reg-bowl': dataset.regressBowl,
+  'reg-ripple': dataset.regressRipple,
+  'reg-peaks': dataset.regressPeaks,
+  'reg-x-ramp': dataset.regressXRamp,
+  'reg-y-ramp': dataset.regressYRamp,
+  'reg-sine-wave': dataset.regressSineWave,
+  'reg-cosine-wave': dataset.regressCosineWave,
+  'reg-diagonal-wave': dataset.regressDiagonalWave,
+  'reg-cone': dataset.regressCone,
+  'reg-tent': dataset.regressTent,
+  'reg-gaussian-hill': dataset.regressGaussianHill,
+  'reg-mexican-hat': dataset.regressMexicanHat,
+  'reg-absolute-ridge': dataset.regressAbsoluteRidge,
+  'reg-soft-step': dataset.regressSoftStep,
+  'reg-parabolic-cylinder': dataset.regressParabolicCylinder,
 };
 
 export const regDatasetLabels: { [key: string]: string } = {
   'reg-plane': 'Regression plane',
   'reg-gauss': 'Regression Gaussian',
+  'reg-sine-surface': 'Sine surface',
+  'reg-saddle': 'Saddle',
+  'reg-bowl': 'Bowl',
+  'reg-ripple': 'Ripple',
+  'reg-peaks': 'Peaks',
+  'reg-x-ramp': 'X ramp',
+  'reg-y-ramp': 'Y ramp',
+  'reg-sine-wave': 'Sine wave',
+  'reg-cosine-wave': 'Cosine wave',
+  'reg-diagonal-wave': 'Diagonal wave',
+  'reg-cone': 'Cone',
+  'reg-tent': 'Tent',
+  'reg-gaussian-hill': 'Gaussian hill',
+  'reg-mexican-hat': 'Mexican hat',
+  'reg-absolute-ridge': 'Absolute ridge',
+  'reg-soft-step': 'Soft step',
+  'reg-parabolic-cylinder': 'Parabolic cylinder',
 };
 
 // ─────────────────────────────────────────────────────────────

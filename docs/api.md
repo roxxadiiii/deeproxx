@@ -59,8 +59,8 @@
 | `Type` | Enum | `STRING`, `NUMBER`, `ARRAY_NUMBER`, `ARRAY_STRING`, `BOOLEAN`, `OBJECT` | Serialization type descriptors. |
 | `activations` | Object | `{ relu, tanh, sigmoid, linear }` | Key-to-object map for activation functions. |
 | `regularizations` | Object | `{ none, L1, L2 }` | Key-to-object map for regularization functions. |
-| `datasets` | Object | `{ circle, xor, gauss, spiral, moons, checkerboard, ... }` | Key-to-function map for 14 classification data generators. |
-| `regDatasets` | Object | `{ 'reg-plane', 'reg-gauss' }` | Key-to-function map for regression data generators. |
+| `datasets` | Object | `{ circle, xor, gauss, spiral, moons, checkerboard, ... }` | Key-to-function map for 19 classification data generators. |
+| `regDatasets` | Object | `{ 'reg-plane', 'reg-gauss', 'reg-sine-surface', ... }` | Key-to-function map for 19 regression data generators. |
 | `State.deserializeState` | Static Method | `() => State` | Parses `window.location.hash` and reconstructs configured state. |
 | `State.prototype.serialize` | Method | `() => string` | Encodes current state properties into a URI hash string and updates browser location. |
 

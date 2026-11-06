@@ -67,6 +67,11 @@ function scaleNoise(noise: number, minOut: number = 0, maxOut: number = 1): numb
   return minOut + (noise / 50) * (maxOut - minOut);
 }
 
+function noisyRegressionTarget(target: number, noise: number): number {
+  const value = target + normalRandom(0, scaleNoise(noise, 0, 0.04));
+  return Math.max(-1, Math.min(1, value));
+}
+
 /**
  * In-place Fisher-Yates shuffle. Mutates the input array.
  * Uses Math.random() (seeded by seedrandom for reproducibility).
@@ -413,6 +418,91 @@ export function classifyRadialSectorsData(
   return points;
 }
 
+/**
+ * Generates alternating classes on concentric rings.
+ */
+export function classifyConcentricRingsData(
+  numSamples: number,
+  noise: number,
+): Example2D[] {
+  const points: Example2D[] = [];
+  for (let i = 0; i < numSamples; i++) {
+    const label = i < Math.ceil(numSamples / 2) ? 1 : -1;
+    const radius = label === 1 ? 1.5 + Math.random() : 3.5 + Math.random() * 1.5;
+    const angle = Math.random() * 2 * Math.PI;
+    const perturbation = scaleNoise(noise, 0, 1);
+    points.push({
+      x: radius * Math.cos(angle) + (Math.random() - 0.5) * perturbation,
+      y: radius * Math.sin(angle) + (Math.random() - 0.5) * perturbation,
+      label,
+    });
+  }
+  return points;
+}
+
+/**
+ * Generates four interleaving arms with alternating labels.
+ */
+export function classifyPinwheelData(numSamples: number, noise: number): Example2D[] {
+  const points: Example2D[] = [];
+  for (let i = 0; i < numSamples; i++) {
+    const arm = i % 4;
+    const radius = Math.random() * 4.5;
+    const angle = (arm * Math.PI) / 2 + radius * 0.65 + normalRandom(0, scaleNoise(noise, 0, 0.12));
+    points.push({
+      x: radius * Math.cos(angle),
+      y: radius * Math.sin(angle),
+      label: arm % 2 === 0 ? 1 : -1,
+    });
+  }
+  return points;
+}
+
+/**
+ * Generates points separated by a cross-shaped decision boundary.
+ */
+export function classifyCrossData(numSamples: number, noise: number): Example2D[] {
+  const points: Example2D[] = [];
+  for (let i = 0; i < numSamples; i++) {
+    const x = Math.random() * 10 - 5 + (Math.random() - 0.5) * scaleNoise(noise, 0, 1);
+    const y = Math.random() * 10 - 5 + (Math.random() - 0.5) * scaleNoise(noise, 0, 1);
+    points.push({ x, y, label: Math.abs(x) < 1.25 || Math.abs(y) < 1.25 ? 1 : -1 });
+  }
+  return points;
+}
+
+/**
+ * Generates a grid of curved classes from a product of sine waves.
+ */
+export function classifyWaveGridData(numSamples: number, noise: number): Example2D[] {
+  const points: Example2D[] = [];
+  for (let i = 0; i < numSamples; i++) {
+    const x = Math.random() * 10 - 5;
+    const y = Math.random() * 10 - 5;
+    const noisyX = x + (Math.random() - 0.5) * scaleNoise(noise, 0, 1);
+    const noisyY = y + (Math.random() - 0.5) * scaleNoise(noise, 0, 1);
+    points.push({
+      x: noisyX,
+      y: noisyY,
+      label: Math.sin(noisyX * 1.1) * Math.sin(noisyY * 1.1) >= 0 ? 1 : -1,
+    });
+  }
+  return points;
+}
+
+/**
+ * Generates classes inside and outside a diamond-shaped boundary.
+ */
+export function classifyDiamondData(numSamples: number, noise: number): Example2D[] {
+  const points: Example2D[] = [];
+  for (let i = 0; i < numSamples; i++) {
+    const x = Math.random() * 10 - 5 + (Math.random() - 0.5) * scaleNoise(noise, 0, 1);
+    const y = Math.random() * 10 - 5 + (Math.random() - 0.5) * scaleNoise(noise, 0, 1);
+    points.push({ x, y, label: Math.abs(x) + Math.abs(y) < 4 ? 1 : -1 });
+  }
+  return points;
+}
+
 // ─────────────────────────────────────────────────────────────
 // SECTION 4: Regression Generators (SRS §4.3.2, §39.4)
 // ─────────────────────────────────────────────────────────────
@@ -471,4 +561,149 @@ export function regressGaussian(numSamples: number, noise: number): Example2D[] 
   }
 
   return points;
+}
+
+/**
+ * Generates a smooth sine-cosine regression surface.
+ */
+export function regressSineSurface(numSamples: number, noise: number): Example2D[] {
+  const points: Example2D[] = [];
+  for (let i = 0; i < numSamples; i++) {
+    const x = Math.random() * 12 - 6;
+    const y = Math.random() * 12 - 6;
+    const label = Math.sin(x * 0.8) * Math.cos(y * 0.8);
+    points.push({ x, y, label: noisyRegressionTarget(label, noise) });
+  }
+  return points;
+}
+
+/**
+ * Generates a saddle-shaped regression surface.
+ */
+export function regressSaddle(numSamples: number, noise: number): Example2D[] {
+  const points: Example2D[] = [];
+  for (let i = 0; i < numSamples; i++) {
+    const x = Math.random() * 12 - 6;
+    const y = Math.random() * 12 - 6;
+    const label = (x * y) / 36;
+    points.push({ x, y, label: noisyRegressionTarget(label, noise) });
+  }
+  return points;
+}
+
+/**
+ * Generates a radial bowl regression surface.
+ */
+export function regressBowl(numSamples: number, noise: number): Example2D[] {
+  const points: Example2D[] = [];
+  for (let i = 0; i < numSamples; i++) {
+    const x = Math.random() * 12 - 6;
+    const y = Math.random() * 12 - 6;
+    const label = 1 - (x * x + y * y) / 36;
+    points.push({ x, y, label: noisyRegressionTarget(label, noise) });
+  }
+  return points;
+}
+
+/**
+ * Generates damped circular ripples around the origin.
+ */
+export function regressRipple(numSamples: number, noise: number): Example2D[] {
+  const points: Example2D[] = [];
+  for (let i = 0; i < numSamples; i++) {
+    const x = Math.random() * 12 - 6;
+    const y = Math.random() * 12 - 6;
+    const radius = Math.sqrt(x * x + y * y);
+    const label = Math.sin(radius * 1.5) * Math.exp(-radius / 5);
+    points.push({ x, y, label: noisyRegressionTarget(label, noise) });
+  }
+  return points;
+}
+
+/**
+ * Generates a multi-peak regression surface from positive and negative hills.
+ */
+export function regressPeaks(numSamples: number, noise: number): Example2D[] {
+  const points: Example2D[] = [];
+  const peaks = [
+    { x: -2.5, y: -2, amplitude: 1 },
+    { x: 2.5, y: 2, amplitude: -1 },
+    { x: 2.5, y: -2.5, amplitude: 0.7 },
+  ];
+  for (let i = 0; i < numSamples; i++) {
+    const x = Math.random() * 12 - 6;
+    const y = Math.random() * 12 - 6;
+    const label = peaks.reduce((sum, peak) => {
+      const dx = x - peak.x;
+      const dy = y - peak.y;
+      return sum + peak.amplitude * Math.exp(-(dx * dx + dy * dy) / 5);
+    }, 0);
+    points.push({ x, y, label: noisyRegressionTarget(label, noise) });
+  }
+  return points;
+}
+
+function generateRegressionSurface(
+  numSamples: number,
+  noise: number,
+  target: (x: number, y: number) => number,
+): Example2D[] {
+  const points: Example2D[] = [];
+  for (let i = 0; i < numSamples; i++) {
+    const x = Math.random() * 12 - 6;
+    const y = Math.random() * 12 - 6;
+    points.push({ x, y, label: noisyRegressionTarget(target(x, y), noise) });
+  }
+  return points;
+}
+
+export function regressXRamp(numSamples: number, noise: number): Example2D[] {
+  return generateRegressionSurface(numSamples, noise, (x) => x / 6);
+}
+
+export function regressYRamp(numSamples: number, noise: number): Example2D[] {
+  return generateRegressionSurface(numSamples, noise, (_, y) => y / 6);
+}
+
+export function regressSineWave(numSamples: number, noise: number): Example2D[] {
+  return generateRegressionSurface(numSamples, noise, (x) => Math.sin(x * 0.8));
+}
+
+export function regressCosineWave(numSamples: number, noise: number): Example2D[] {
+  return generateRegressionSurface(numSamples, noise, (_, y) => Math.cos(y * 0.8));
+}
+
+export function regressDiagonalWave(numSamples: number, noise: number): Example2D[] {
+  return generateRegressionSurface(numSamples, noise, (x, y) => Math.sin((x + y) * 0.65));
+}
+
+export function regressCone(numSamples: number, noise: number): Example2D[] {
+  return generateRegressionSurface(numSamples, noise, (x, y) => 1 - Math.sqrt(x * x + y * y) / 8.5);
+}
+
+export function regressTent(numSamples: number, noise: number): Example2D[] {
+  return generateRegressionSurface(numSamples, noise, (x, y) => 1 - Math.max(Math.abs(x), Math.abs(y)) / 6);
+}
+
+export function regressGaussianHill(numSamples: number, noise: number): Example2D[] {
+  return generateRegressionSurface(numSamples, noise, (x, y) => Math.exp(-(x * x + y * y) / 12));
+}
+
+export function regressMexicanHat(numSamples: number, noise: number): Example2D[] {
+  return generateRegressionSurface(numSamples, noise, (x, y) => {
+    const radiusSquared = (x * x + y * y) / 18;
+    return (1 - radiusSquared) * Math.exp(-radiusSquared);
+  });
+}
+
+export function regressAbsoluteRidge(numSamples: number, noise: number): Example2D[] {
+  return generateRegressionSurface(numSamples, noise, (x, y) => 1 - Math.abs(x + y) / 12);
+}
+
+export function regressSoftStep(numSamples: number, noise: number): Example2D[] {
+  return generateRegressionSurface(numSamples, noise, (x) => Math.tanh(x * 0.65));
+}
+
+export function regressParabolicCylinder(numSamples: number, noise: number): Example2D[] {
+  return generateRegressionSurface(numSamples, noise, (x) => 1 - (x * x) / 36);
 }

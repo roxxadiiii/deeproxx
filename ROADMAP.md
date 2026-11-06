@@ -5,7 +5,7 @@
 > **Source of Truth:** `SRS.md` v4.0 (59 sections, ~1500+ lines)
 > **Generated With:** `roadmap-generator` skill (Enterprise Workflows)
 > **Coverage Guarantee:** Every SRS section §1–§59 is mapped to ≥1 task
-> **Total Phases:** 15 | **Total Tasks:** 369 | **Estimated Duration:** 20–24 weeks (solo, part-time)
+> **Total Phases:** 15 | **Total Tasks:** 371 | **Estimated Duration:** 20–24 weeks (solo, part-time)
 
 ---
 
@@ -169,7 +169,7 @@ Every SRS section is mapped to at least one roadmap task below. **Zero gaps.**
 | :--- | :--- | :--- | :--- | :--- |
 | 0 | Foundation & Setup | Toolchain, repo, build | 3–5 days | 🔴 |
 | 1 | Mathematical Core | Node, Link, forward/backprop | 1.5 weeks | 🔴 |
-| 2 | Dataset Engine | 16 datasets (14 classification, 2 regression), noise, shuffle | 1 week | 🔴 |
+| 2 | Dataset Engine | 38 datasets (19 classification, 19 regression), noise, shuffle | 1 week | 🔴 |
 | 3 | State & URL | Hash parsing, seeds | 4 days | 🔴 |
 | 4 | UI Shell | 4-column layout, controls | 1 week | 🟡 |
 | 5 | SVG Visualization | Nodes, Bezier links, hover | 1.5 weeks | 🟡 |
@@ -255,7 +255,7 @@ Every SRS section is mapped to at least one roadmap task below. **Zero gaps.**
 
 ## 📊 Phase 2 — Dataset Engine (`src/dataset.ts`)
 
-**Goal:** 16 datasets (14 classification, 2 regression) with noise, shuffle, and split.
+**Goal:** 38 datasets (19 classification, 19 regression) with noise, shuffle, and split.
 **Duration:** 1 week | **SRS Ref:** §4.3, §39.4, §45, §47, §48
 
 | ID | Task | Status | Depends | SRS |
@@ -281,8 +281,10 @@ Every SRS section is mapped to at least one roadmap task below. **Zero gaps.**
 | P2.19 | Verify XOR padding: no point has |x|<0.3 or |y|<0.3 | ✅ | P2.4 | §4.3.1 |
 | P2.20 | Verify Circle: no point at distance 2.5 < r < 3.5 | ✅ | P2.3 | §4.3.1 |
 | P2.21 | Add ten from-scratch classification generators, dynamic accessible thumbnails, URL selection, and generator verification | ✅ | P2.12, P3.5 | `src/dataset.ts`, `src/state.ts`, `src/playground.ts`, `test/verify.ts` |
+| P2.22 | Add five classification and five regression generators with dynamic thumbnails, URL selection, and finite-output tests | ✅ | P2.21 | `src/dataset.ts`, `src/state.ts`, `test/verify.ts` |
+| P2.23 | Expand regression to 19 generators to match classification, with URL registration and bounded-output tests | ✅ | P2.22 | `src/dataset.ts`, `src/state.ts`, `test/verify.ts` |
 
-**Exit criteria:** All 16 generators visually correct; shuffle uniform; noise/split/safety verified.
+**Exit criteria:** All 38 generators produce valid points and render in the playground; shuffle uniform; noise/split/safety verified.
 
 ---
 
